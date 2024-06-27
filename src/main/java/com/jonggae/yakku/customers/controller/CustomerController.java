@@ -19,6 +19,11 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
+    @GetMapping("/test")
+    public String test() {
+        return "User service is up and running";
+    }
+
     //todo: 회원가입 상황에 대응한 예외 처리 작성하기 , response 응답 형태 정리하기
 
     @PostMapping("/register")

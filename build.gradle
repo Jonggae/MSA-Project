@@ -22,9 +22,12 @@ configurations {
 repositories {
     mavenCentral()
 }
+ext {
+    set('springCloudVersion', "2023.0.2")
+}
 
 dependencies {
-    runtimeOnly 'mysql:mysql-connector-j'
+    runtimeOnly 'com.mysql:mysql-connector-j'
 
     // 인증 토큰, JWT 토큰 관리를 위한 Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
@@ -40,6 +43,8 @@ dependencies {
 
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     runtimeOnly 'com.mysql:mysql-connector-j'
@@ -48,6 +53,11 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+}
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
 }
 
 tasks.named('test') {
