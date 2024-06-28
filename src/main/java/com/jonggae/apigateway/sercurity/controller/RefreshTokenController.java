@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
@@ -23,22 +24,26 @@ public class RefreshTokenController {
 
     // 재발급 받는 과정
     @PostMapping("/api/auth/refresh")
-    public ResponseEntity<?> refreshAccessToken(@RequestBody Map<String, String> request) {
+    public Mono<ResponseEntity<?>> refreshAccessToken(@RequestBody Map<String, String> request) {
         String refreshToken = request.get("refreshToken");
 
-        if (refreshToken == null || !tokenProvider.validateRefreshToken(refreshToken)) {
-            return ResponseEntity.badRequest().body("invalid refresh token");
-        }
-        String customerName = tokenProvider.getCustomerNameFromToken(refreshToken);
-        String storedCustomerName = tokenService.getCustomerNameByRefreshToken(refreshToken);
-
-        if (storedCustomerName == null || !storedCustomerName.equals(customerName)) {
-            return ResponseEntity.badRequest().body("Invalid refresh token");
+        if (refreshToken == null) {
+            return Mono.just(ResponseEntity.badRequest().body("Invalid refresh token"));
         }
 
-        Authentication authentication = tokenProvider.getAuthenticationFromRefreshToken(refreshToken);
-        String newAccessToken = tokenProvider.createAccessToken(authentication);
+        return tokenProvider.validateRefreshToken(refreshToken)
+                .flatMap(isValid -> {
+                    if (!isValid) {
+                        return Mono.just(ResponseEntity.badRequest().body("Invalid refresh token"));
+                    }
 
-        return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+                    return Mono.just(tokenProvider.getCustomerNameFromToken(refreshToken))
+                            .flatMap(customerName -> {
+                                String storedCustomerName = tokenService.getCustomerNameByRefreshToken(refreshToken);
+
+                                return Mono.just(ResponseEntity.badRequest().body("Invalid refresh token"));
+
+                            });
+                });
     }
 }

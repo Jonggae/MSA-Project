@@ -1,41 +1,46 @@
-package com.jonggae.apigateway.sercurity.jwt;
-
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
-
-public class JwtAuthorizationFilter extends OncePerRequestFilter {
-
-    private final TokenProvider tokenProvider;
-    private final JwtFilter jwtFilter;
-
-    public JwtAuthorizationFilter(TokenProvider tokenProvider, JwtFilter jwtFilter) {
-        this.tokenProvider = tokenProvider;
-        this.jwtFilter = jwtFilter;
-    }
-
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        String token = jwtFilter.resolveToken(request);
-
-        if (token != null && tokenProvider.validateToken(token)) {
-            Authentication authentication = tokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
-        chain.doFilter(request, response);
-    }
-
-    private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if(bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
-    }
-}
+//package com.jonggae.apigateway.sercurity.jwt;
+//
+//import lombok.RequiredArgsConstructor;
+//import org.springframework.security.core.Authentication;
+//import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+//import org.springframework.security.core.context.SecurityContext;
+//import org.springframework.security.core.context.SecurityContextImpl;
+//import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
+//import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
+//import org.springframework.stereotype.Component;
+//import org.springframework.web.server.ServerWebExchange;
+//import org.springframework.web.server.WebFilter;
+//import org.springframework.web.server.WebFilterChain;
+//import reactor.core.publisher.Mono;
+//
+//@Component
+//@RequiredArgsConstructor
+//public class JwtAuthorizationFilter implements WebFilter {
+//
+//    private final TokenProvider tokenProvider;
+//    private final JwtFilter jwtFilter;
+//
+//    @Override
+//    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+//        return ServerWebExchangeMatchers.pathMatchers("/api/**")
+//                .matches(exchange)
+//                .filter(ServerWebExchangeMatcher.MatchResult::isMatch)
+//                .flatMap(matchResult -> extractToken(exchange))
+//                .flatMap(token -> tokenProvider.validateToken(token)
+//                        .filter(valid -> valid)
+//                        .flatMap(valid -> tokenProvider.getAuthentication(token))
+//                )
+//                .flatMap(authentication -> {
+//                    SecurityContext context = new SecurityContextImpl(authentication);
+//                    return chain.filter(exchange)
+//                            .contextWrite(ReactiveSecurityContextHolder.withSecurityContext(Mono.just(context)));
+//                })
+//                .switchIfEmpty(chain.filter(exchange));
+//    }
+//
+//    private Mono<String> extractToken(ServerWebExchange exchange) {
+//        return Mono.justOrEmpty(exchange.getRequest().getHeaders().getFirst("Authorization"))
+//                .filter(bearerToken -> bearerToken.startsWith("Bearer "))
+//                .map(bearerToken -> bearerToken.substring(7));
+//    }
+//}

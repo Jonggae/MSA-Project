@@ -2,19 +2,24 @@ package com.jonggae.apigateway.customer.service;
 
 import com.jonggae.apigateway.customer.dto.CustomerRequestDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
 
-    private final RestTemplate restTemplate;
+    private final WebClient.Builder webClientBuilder;
 
-    public void save(CustomerRequestDto customerRequestDto) {
+    // 회원가입 요청
+    public Mono<String> save(CustomerRequestDto customerRequestDto) {
         String userServiceUrl = "http://localhost:8081/api/customer/register";
-        ResponseEntity<String> response = restTemplate.postForEntity(userServiceUrl, customerRequestDto, String.class);
-        response.getBody();
+        return webClientBuilder.build()
+                .post()
+                .uri(userServiceUrl)
+                .bodyValue(customerRequestDto)
+                .retrieve()
+                .bodyToMono(String.class);
     }
 }

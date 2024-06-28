@@ -5,86 +5,87 @@ import com.jonggae.apigateway.sercurity.handler.jwt.JwtAccessDeniedHandler;
 import com.jonggae.apigateway.sercurity.handler.jwt.JwtAuthenticationEntryPoint;
 import com.jonggae.apigateway.sercurity.handler.login.LoginFailureHandler;
 import com.jonggae.apigateway.sercurity.handler.login.LoginSuccessHandler;
-import com.jonggae.apigateway.sercurity.jwt.*;
+import com.jonggae.apigateway.sercurity.jwt.JwtFilter;
+import com.jonggae.apigateway.sercurity.jwt.TokenProvider;
+import com.jonggae.apigateway.sercurity.utils.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.authentication.ReactiveAuthenticationManager;
+import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
+import org.springframework.security.web.server.context.ServerSecurityContextRepository;
+import org.springframework.security.web.server.context.WebSessionServerSecurityContextRepository;
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebFluxSecurity
 @RequiredArgsConstructor
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
     private final TokenProvider tokenProvider;
+    private final CustomUserDetailsService customUserDetailsService;
+
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-    private final AuthenticationConfiguration authenticationConfiguration;
-    private final LoginProvider loginProvider;
-    private final LoginSuccessHandler successHandler;
-    private final LoginFailureHandler failureHandler;
+    private final LoginSuccessHandler loginSuccessHandler;
+    private final LoginFailureHandler loginFailureHandler;
     private final JwtFilter jwtFilter;
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
     @Bean
-    public AuthenticationProvider authenticationProvider() {
-        return loginProvider;
-    }
-
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
-    }
-
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(loginProvider, successHandler, failureHandler);
-        filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
-        return filter;
+    public ReactiveAuthenticationManager reactiveAuthenticationManager() {
+        UserDetailsRepositoryReactiveAuthenticationManager authenticationManager =
+                new UserDetailsRepositoryReactiveAuthenticationManager(customUserDetailsService);
+        authenticationManager.setPasswordEncoder(passwordEncoder());
+        return authenticationManager;
     }
 
     @Bean
-    public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(tokenProvider, jwtFilter);
+    public ServerSecurityContextRepository securityContextRepository() {
+        return new WebSessionServerSecurityContextRepository();
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests((authorizeRequests) -> authorizeRequests
-                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                .requestMatchers("/api/customer/**").permitAll()
-                .requestMatchers("/api/products/**").permitAll()
-                .anyRequest().authenticated());
+    public AuthenticationWebFilter authenticationWebFilter() {
+        AuthenticationWebFilter authenticationWebFilter = new AuthenticationWebFilter(reactiveAuthenticationManager());
+        authenticationWebFilter.setSecurityContextRepository(securityContextRepository());
+        authenticationWebFilter.setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.pathMatchers("/api/customer/login"));
+        authenticationWebFilter.setAuthenticationSuccessHandler(loginSuccessHandler);
+        authenticationWebFilter.setAuthenticationFailureHandler(loginFailureHandler);
+        return authenticationWebFilter;
+    }
 
-        http.exceptionHandling(exceptionHandling ->
-                exceptionHandling
+    @Bean
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+        http
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .authorizeExchange(exchanges -> exchanges
+                        .pathMatchers("/api/customer/**").permitAll()
+                        .pathMatchers("/api/products/**").permitAll()
+                        .anyExchange().authenticated()
+                )
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                         .accessDeniedHandler(jwtAccessDeniedHandler)
-                        .authenticationEntryPoint(jwtAuthenticationEntryPoint));
-
-        http.sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        http.csrf(AbstractHttpConfigurer::disable); // CSRF 보호 비활성화 (필요에 따라 활성화)
-
-        http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class)
-                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
-
-
+                )
+                .formLogin(form -> form
+                        .authenticationSuccessHandler(loginSuccessHandler)
+                        .authenticationFailureHandler(loginFailureHandler)
+                )
+                .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHORIZATION);
 
         return http.build();
     }

@@ -1,37 +1,50 @@
 package com.jonggae.apigateway.sercurity.utils;
 
-import com.jonggae.yakku.customers.entity.Customer;
-import com.jonggae.yakku.customers.repository.CustomerRepository;
+import com.jonggae.apigateway.customer.dto.CustomerResponseDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class CustomUserDetailsService implements UserDetailsService {
+@RequiredArgsConstructor
+public class CustomUserDetailsService implements ReactiveUserDetailsService,UserDetailsService {
 
-    private final CustomerRepository customerRepository;
+    private final WebClient.Builder webClientBuilder;
 
-    public CustomUserDetailsService(CustomerRepository customerRepository) {
-        this.customerRepository = customerRepository;
+    @Override
+    public Mono<UserDetails> findByUsername(String customerName) {
+        String customerServiceUrl = "http://customer-service/api/customers/" + customerName;
+        return webClientBuilder.build()
+                .get()
+                .uri(customerServiceUrl)
+                .retrieve()
+                .bodyToMono(CustomerResponseDto.class)
+                .map(customer -> {
+                    List<GrantedAuthority> authorities = customer.getAuthorities().stream()
+                            .map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName().name()))
+                            .collect(Collectors.toList());
+                    return User.withUsername(customer.getCustomerName())
+                            .password(customer.getPassword())
+                            .authorities(authorities)
+                            .accountExpired(false)
+                            .accountLocked(false)
+                            .credentialsExpired(false)
+                            .disabled(!customer.isEnabled())
+                            .build();
+                })
+                .switchIfEmpty(Mono.error(new UsernameNotFoundException("User not found")));
     }
 
     @Override
-    public UserDetails loadUserByUsername(String customerName) throws UsernameNotFoundException {
-        return customerRepository.findOneWithAuthoritiesByCustomerName(customerName)
-                .map(this::createCustomUserDetails)
-                .orElseThrow(() -> new UsernameNotFoundException(customerName + "데이터베이스에서 찾을 수 없습니다."));
-    }
-
-    private CustomUserDetails createCustomUserDetails(Customer customer) {
-        List<GrantedAuthority> grantedAuthorities = customer.getAuthorities().stream()
-                .map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName().name()))
-                .collect(Collectors.toList());
-        return new CustomUserDetails(customer, grantedAuthorities);
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return findByUsername(username).block();
     }
 }

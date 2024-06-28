@@ -27,10 +27,10 @@ spring:
 jwt:
   header: Authorization
   secret:
-    key: ${JWT_SECRET_KEY}
+    key: 7cXgyqn7XMcfy4MZ6EEYtWS9jSFdh4KHnTa+6MdVvof9Cqz0pKdzFqPRwztEPpIfUwLo9DtOMC1+qdLprIgfqA==
   refresh:
     secret:
-      key: ${JWT_REFRESH_SECRET_KEY}
+      key: RLvmZ/L+kt78aRvh6/qscI2LRLEBsysy1SjIGwhZ6uhnbb8qwkAXQWyOALck6j0FJbiQH9Dw9+0qlBRh5I9w4g==
   expiration_time: 3600
   refresh_expiration_time: 604800
 
