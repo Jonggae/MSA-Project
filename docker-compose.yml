@@ -12,7 +12,7 @@ services:
       - mysql_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - my_network
+      - eureka-network
 
   redis:
     image: "redis:latest"
@@ -22,12 +22,17 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      - my_network
+      - eureka-network
 
 volumes:
   mysql_data:
   redis_data:
 
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
 networks:
-  my_network:
+  eureka-network:
     driver: bridge
