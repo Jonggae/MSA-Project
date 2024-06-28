@@ -10,11 +10,43 @@ spring:
         locator:
           enabled: true
           lower-case-service-id: true
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/users/**
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/orders/**
+        - id: product-service
+          uri: lb://product-service
+          predicates:
+            - Path=/api/products/**
+
+jwt:
+  header: Authorization
+  secret:
+    key: ${JWT_SECRET_KEY}
+  refresh:
+    secret:
+      key: ${JWT_REFRESH_SECRET_KEY}
+  expiration_time: 3600
+  refresh_expiration_time: 604800
+
+logging:
+  level:
+    org.springframework.security: debug
+
+data:
+  redis:
+    host: localhost
+    port: 6379
 
 eureka:
   client:
     service-url:
-      defaultZone: http://eureka-server:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/
   instance:
     prefer-ip-address: true
 
