@@ -2,10 +2,7 @@ package com.jonggae.yakku.customers.controller;
 
 import com.jonggae.yakku.common.apiResponse.ApiResponseDto;
 import com.jonggae.yakku.common.apiResponse.ApiResponseUtil;
-import com.jonggae.yakku.customers.dto.CustomerRequestDto;
-import com.jonggae.yakku.customers.dto.CustomerResponseDto;
-import com.jonggae.yakku.customers.dto.CustomerUpdateDto;
-import com.jonggae.yakku.customers.dto.LoginRequestDto;
+import com.jonggae.yakku.customers.dto.*;
 import com.jonggae.yakku.customers.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -49,8 +46,8 @@ public class CustomerController {
     }
 
     @GetMapping("/my-page")
-    public ResponseEntity<ApiResponseDto<CustomerResponseDto>> myPage() {
-        CustomerResponseDto getCustomerDto = customerService.getMyPage();
+    public ResponseEntity<ApiResponseDto<CustomerMyPageResponseDto>> myPage() {
+        CustomerMyPageResponseDto getCustomerDto = customerService.getMyPage();
         String message = "회원 정보";
         return ApiResponseUtil.success(message, getCustomerDto, 200);
     }

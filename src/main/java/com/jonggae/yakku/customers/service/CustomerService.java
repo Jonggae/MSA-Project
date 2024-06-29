@@ -2,10 +2,7 @@ package com.jonggae.yakku.customers.service;
 
 import com.jonggae.yakku.address.Address;
 import com.jonggae.yakku.common.redis.TokenService;
-import com.jonggae.yakku.customers.dto.CustomerRequestDto;
-import com.jonggae.yakku.customers.dto.CustomerResponseDto;
-import com.jonggae.yakku.customers.dto.CustomerUpdateDto;
-import com.jonggae.yakku.customers.dto.LoginRequestDto;
+import com.jonggae.yakku.customers.dto.*;
 import com.jonggae.yakku.customers.entity.Authority;
 import com.jonggae.yakku.customers.entity.Customer;
 import com.jonggae.yakku.customers.entity.UserRoleEnum;
@@ -80,11 +77,11 @@ public class CustomerService {
 
     //todo: 액세스 토큰이 만료되었을 때도 아래 오류가 뜸. 다른 예외처리로 수정필요
     //todo : 마이페이지 내에서 주문상품과 위시리스트도 보여주어야함
-    public CustomerResponseDto getMyPage() {
+    public CustomerMyPageResponseDto getMyPage() {
         String customerName = securityUtil.getCurrentCustomerName();
         Customer customer = customerRepository.findOneWithAuthoritiesByCustomerName(customerName)
                 .orElseThrow(NotFoundMemberException::new);
-        return CustomerResponseDto.from(customer);
+        return CustomerMyPageResponseDto.from(customer);
     }
 
     @Transactional
