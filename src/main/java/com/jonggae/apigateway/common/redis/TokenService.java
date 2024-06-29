@@ -22,27 +22,6 @@ public class TokenService {
 
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
-//
-//    public String createEmailToken(String mail, CustomerRequestDto customerDto) {
-//        String token = UUID.randomUUID().toString();
-//        try {
-//            String customerDtoString = objectMapper.writeValueAsString(customerDto);
-//            redisTemplate.opsForValue().set(token, customerDtoString, EMAIL_TOKEN_TTL.toMillis(), TimeUnit.MILLISECONDS);
-//
-//        } catch (JsonProcessingException e) {
-//            throw new RuntimeException("Unable to serialize CustomerResponseDto", e);
-//        }
-//        return token;
-//    }
-//
-//    public CustomerRequestDto getUserDetailsByEmailToken(String token) {
-//        String customerDtoString = redisTemplate.opsForValue().get(token);
-//        try {
-//            return objectMapper.readValue(customerDtoString, CustomerRequestDto.class);
-//        } catch (JsonProcessingException e) {
-//            throw new RuntimeException("Unable to deserialize CustomerResponseDto", e);
-//        }
-//    }
 
     public void deleteEmailToken(String token) {
         redisTemplate.delete(token);
@@ -55,7 +34,6 @@ public class TokenService {
     }
 
     public String getCustomerNameByRefreshToken(String refreshToken) {
-
         return redisTemplate.opsForValue().get(refreshToken);
     }
 
