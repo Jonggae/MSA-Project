@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,21 +17,24 @@ public class CustomerResponseDto {
 
     private String customerName;
     private String email;
+    private String password;
     private String address;
     private String addressDetail;
-
+    private boolean enabled;
     private Set<AuthorityDto> authorityDtoSet;
 
     public static CustomerResponseDto from(Customer customer) {
         return CustomerResponseDto.builder()
                 .customerName(customer.getCustomerName())
                 .email(customer.getEmail())
+                .password(customer.getPassword())
                 .address(customer.getAddress().getAddress())
                 .addressDetail(customer.getAddress().getAddressDetail())
                 .authorityDtoSet(customer.getAuthorities().stream()
                         .map(authority -> AuthorityDto.builder()
-                        .authorityName(authority.getAuthorityName()).build())
+                                .authorityName(authority.getAuthorityName()).build())
                         .collect(Collectors.toSet()))
+                .enabled(customer.isEnabled())
                 .build();
     }
 }

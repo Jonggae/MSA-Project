@@ -5,6 +5,7 @@ import com.jonggae.yakku.common.redis.TokenService;
 import com.jonggae.yakku.customers.dto.CustomerRequestDto;
 import com.jonggae.yakku.customers.dto.CustomerResponseDto;
 import com.jonggae.yakku.customers.dto.CustomerUpdateDto;
+import com.jonggae.yakku.customers.dto.LoginRequestDto;
 import com.jonggae.yakku.customers.entity.Authority;
 import com.jonggae.yakku.customers.entity.Customer;
 import com.jonggae.yakku.customers.entity.UserRoleEnum;
@@ -18,10 +19,11 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.beans.Transient;
 import java.util.Collections;
 
 @Service
@@ -102,5 +104,24 @@ public class CustomerService {
         if (customerRepository.findByEmail(email).isPresent()) {
             throw new DuplicateMemberException("이미 사용중인 이메일 주소 입니다.");
         }
+    }
+
+    /////////////////////// GATEWAY 용
+    public CustomerResponseDto login(LoginRequestDto requestDto) {
+        Customer customer = customerRepository.findByCustomerName(requestDto.getCustomerName())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        if (!passwordEncoder.matches(requestDto.getPassword(), customer.getPassword())) {
+            throw new BadCredentialsException("Invalid password");
+        }
+
+        return CustomerResponseDto.from(customer);
+    }
+
+    public CustomerResponseDto getCustomerByCustomerName(String customerName) {
+        Customer customer = customerRepository.findByCustomerName(customerName)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        return CustomerResponseDto.from(customer);
     }
 }

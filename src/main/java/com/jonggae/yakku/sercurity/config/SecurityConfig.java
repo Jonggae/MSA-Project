@@ -68,7 +68,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((authorizeRequests) -> authorizeRequests
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                .requestMatchers("/api/customer/**").permitAll()
+                .requestMatchers("/api/customers/**").permitAll()
+                .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/api/products/**").permitAll()
                 .anyRequest().authenticated());
 

@@ -3,22 +3,21 @@ version: '3.8'
 services:
   mysql:
     image: mysql:latest
-    container_name: user_service_container
+    container_name: customer_service_container
     env_file:
       - .env
     ports:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - eureka-network
 
   redis:
     image: "redis:latest"
-    container_name: "user_service_redis"
+    container_name: "customer_service_redis"
     ports:
-      - "6380:6379"
+      - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
@@ -27,11 +26,6 @@ services:
 volumes:
   mysql_data:
   redis_data:
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
 
 networks:
   eureka-network:

@@ -26,7 +26,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         this.setAuthenticationFailureHandler(failureHandler);
 
         // 로그인 URL 설정
-        setFilterProcessesUrl("/api/customer/login");
+//        setFilterProcessesUrl("/api/customers/login");
     }
 
     @Override //로그인 시도

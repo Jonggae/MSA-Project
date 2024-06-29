@@ -1,3 +1,0 @@
-CREATE DATABASE IF NOT EXISTS user_database;
-GRANT ALL PRIVILEGES ON user_database.* TO 'cjw'@'%' IDENTIFIED BY 'whdro9563**';
-FLUSH PRIVILEGES;
