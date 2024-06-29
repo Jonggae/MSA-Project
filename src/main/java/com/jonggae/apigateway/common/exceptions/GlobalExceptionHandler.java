@@ -1,4 +1,4 @@
-package com.jonggae.apigateway.exceptions;
+package com.jonggae.apigateway.common.exceptions;
 
 
 import com.jonggae.apigateway.common.apiResponse.ApiResponseDto;

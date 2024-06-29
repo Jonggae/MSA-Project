@@ -1,8 +1,7 @@
-package com.jonggae.apigateway.customer.controller;
+package com.jonggae.apigateway.login;
 
 import com.jonggae.apigateway.customer.dto.JwtResponse;
 import com.jonggae.apigateway.customer.dto.LoginRequestDto;
-import com.jonggae.apigateway.customer.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

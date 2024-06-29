@@ -1,4 +1,4 @@
-package com.jonggae.apigateway.exceptions;
+package com.jonggae.apigateway.common.exceptions;
 
 public class NotFoundMemberException extends RuntimeException {
     public NotFoundMemberException() {

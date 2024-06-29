@@ -3,7 +3,7 @@ package com.jonggae.apigateway.sercurity.handler.login;
 
 import com.jonggae.apigateway.common.apiResponse.ApiResponseDto;
 import com.jonggae.apigateway.common.apiResponse.ApiResponseUtil;
-import com.jonggae.apigateway.exceptions.DuplicateMemberException;
+import com.jonggae.apigateway.common.exceptions.DuplicateMemberException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
