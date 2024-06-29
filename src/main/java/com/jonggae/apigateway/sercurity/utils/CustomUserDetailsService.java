@@ -6,7 +6,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -15,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class CustomUserDetailsService implements ReactiveUserDetailsService,UserDetailsService {
+public class CustomUserDetailsService implements ReactiveUserDetailsService, UserDetailsService {
 
     private final WebClient.Builder webClientBuilder;
 
@@ -27,8 +26,11 @@ public class CustomUserDetailsService implements ReactiveUserDetailsService,User
                 .uri(customerServiceUrl)
                 .retrieve()
                 .bodyToMono(CustomerResponseDto.class)
+                .doOnNext(customer -> {
+                    System.out.println("Customer retrieved: " + customer);
+                })
                 .map(customer -> {
-                    List<GrantedAuthority> authorities = customer.getAuthorities().stream()
+                    List<GrantedAuthority> authorities = customer.getAuthorityDtoSet().stream()
                             .map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName().name()))
                             .collect(Collectors.toList());
                     return User.withUsername(customer.getCustomerName())

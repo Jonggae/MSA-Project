@@ -1,17 +1,28 @@
 package com.jonggae.apigateway.customer.dto;
 
-import com.jonggae.apigateway.customer.entity.Authority;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.Set;
 
 @Getter
+@Setter
 @AllArgsConstructor
+@Data
+@NoArgsConstructor
 public class CustomerResponseDto {
+
     private String customerName;
+
     private String password;
+
     private String email;
-    private Set<Authority> authorities;
+
+    private String address;
+
+    private String addressDetail;
+
     private boolean enabled;
+
+    private Set<AuthorityDto> authorityDtoSet;
+
 }

@@ -33,7 +33,6 @@ public class SecurityConfig {
 
     private final TokenProvider tokenProvider;
     private final CustomUserDetailsService customUserDetailsService;
-
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final LoginSuccessHandler loginSuccessHandler;
@@ -73,9 +72,8 @@ public class SecurityConfig {
         http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/api/customer/**").permitAll()
-                        .pathMatchers("/api/products/**").permitAll()
-                        .anyExchange().authenticated()
+                        .pathMatchers("/auth/**").permitAll()
+                        .anyExchange().permitAll()
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
