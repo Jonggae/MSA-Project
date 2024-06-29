@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public class LoginService {
     private final WebClient.Builder webClientBuilder;
     private final ReactiveAuthenticationManager reactiveAuthenticationManager;
     private final TokenProvider tokenProvider;
