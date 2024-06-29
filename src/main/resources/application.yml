@@ -1,6 +1,5 @@
 server:
   port: 8080
-
 spring:
   application:
     name: api-gateway
@@ -11,10 +10,10 @@ spring:
           enabled: true
           lower-case-service-id: true
       routes:
-        - id: user-service
-          uri: lb://user-service
+        - id: customer-service
+          uri: lb://customer-service
           predicates:
-            - Path=/users/**
+            - Path=/auth/**
         - id: order-service
           uri: lb://order-service
           predicates:
@@ -27,16 +26,17 @@ spring:
 jwt:
   header: Authorization
   secret:
-    key: 7cXgyqn7XMcfy4MZ6EEYtWS9jSFdh4KHnTa+6MdVvof9Cqz0pKdzFqPRwztEPpIfUwLo9DtOMC1+qdLprIgfqA==
+    key: ${JWT_SECRET_KEY}
   refresh:
     secret:
-      key: RLvmZ/L+kt78aRvh6/qscI2LRLEBsysy1SjIGwhZ6uhnbb8qwkAXQWyOALck6j0FJbiQH9Dw9+0qlBRh5I9w4g==
+      key: ${JWT_REFRESH_SECRET_KEY}
   expiration_time: 3600
   refresh_expiration_time: 604800
 
 logging:
   level:
     org.springframework.security: debug
+#    org.springframework: debug
 
 data:
   redis:

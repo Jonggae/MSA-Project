@@ -1,26 +1,17 @@
-# Use a base image with Java and Gradle
-FROM gradle:7.4.2-jdk11 AS build
-
-# Set the working directory
-WORKDIR /home/gradle/project
-
-# Copy the project files
-COPY . .
-
-# Build the project
-RUN gradle build --no-daemon
-
-# Use an official OpenJDK runtime as a parent image
-FROM openjdk:11-jre-slim
+# Base image with Java 21
+FROM openjdk:21-jdk-slim
 
 # Set the working directory
 WORKDIR /app
 
-# Copy the jar file from the build stage
-COPY --from=build /home/gradle/project/build/libs/*.jar app.jar
+# Copy the project files
+COPY . .
 
-# Expose the port
-EXPOSE 8080
+# Use the Gradle Wrapper to build the project
+RUN ./gradlew build -x test
 
-# Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Copy the built jar file to the working directory
+RUN cp build/libs/api-gateway-0.0.1-SNAPSHOT.jar app.jar
+
+# Set the entry point for the container
+CMD ["java", "-jar", "app.jar"]
