@@ -32,7 +32,6 @@ import org.springframework.security.web.server.util.matcher.ServerWebExchangeMat
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
-    private final TokenProvider tokenProvider;
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
