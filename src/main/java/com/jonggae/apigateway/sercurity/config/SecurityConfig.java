@@ -74,6 +74,7 @@ public class SecurityConfig {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/auth/**", "/api/customers/**").permitAll()
+                        .pathMatchers("/api/products/**", "/api/orders/**").permitAll()
                         .pathMatchers("/logout").permitAll() // 로그아웃 엔드포인트 보호
                         .anyExchange().authenticated()
                 )
