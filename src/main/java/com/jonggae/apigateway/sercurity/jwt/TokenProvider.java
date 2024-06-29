@@ -41,7 +41,8 @@ public class TokenProvider implements InitializingBean {
             @Value("${jwt.secret.key}") String secretKey,
             @Value("${jwt.refresh.secret.key}") String refreshSecretKey,
             @Value("${jwt.expiration_time}") long tokenExpirationTime,
-            @Value("${jwt.refresh_expiration_time}") long refreshTokenExpirationTime, CustomUserDetailsService customUserDetailsService) {
+            @Value("${jwt.refresh_expiration_time}") long refreshTokenExpirationTime,
+            CustomUserDetailsService customUserDetailsService) {
         this.redisTemplate = redisTemplate;
         this.secretKey = secretKey;
         this.refreshSecretKey = refreshSecretKey;
@@ -151,21 +152,30 @@ public class TokenProvider implements InitializingBean {
     }
 
     public Mono<Boolean> validateRefreshToken(String token) {
-        return Mono.justOrEmpty(token)
-                .map(t -> {
-                    try {
-                        Jwts.parserBuilder().setSigningKey(refreshKey).build().parseClaimsJws(t);
-                        return true;
-                    } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-                        logger.info("잘못된 RefreshToken 서명입니다.");
-                    } catch (ExpiredJwtException e) {
-                        logger.info("만료된 JWT 리프레시 토큰입니다.");
-                    } catch (UnsupportedJwtException e) {
-                        logger.info("지원되지 않는 JWT 리프레시 토큰입니다.");
-                    } catch (IllegalArgumentException e) {
-                        logger.info("JWT 리프레시 토큰이 잘못되었습니다.");
+        return redisTemplate.hasKey(token)
+                .flatMap(exists -> {
+                    if (!exists) {
+                        return Mono.just(false);
                     }
-                    return false;
+
+                    return Mono.justOrEmpty(token)
+                            .map(t -> {
+                                try {
+                                    Jwts.parserBuilder().setSigningKey(refreshKey).build().parseClaimsJws(t);
+                                    logger.info("유효한 리프레시 토큰입니다.");
+
+                                    return true;
+                                } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+                                    logger.info("잘못된 RefreshToken 서명입니다.");
+                                } catch (ExpiredJwtException e) {
+                                    logger.info("만료된 JWT 리프레시 토큰입니다.");
+                                } catch (UnsupportedJwtException e) {
+                                    logger.info("지원되지 않는 JWT 리프레시 토큰입니다.");
+                                } catch (IllegalArgumentException e) {
+                                    logger.info("JWT 리프레시 토큰이 잘못되었습니다.");
+                                }
+                                return false;
+                            });
                 });
     }
 }

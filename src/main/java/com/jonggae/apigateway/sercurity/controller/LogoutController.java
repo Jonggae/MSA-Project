@@ -1,6 +1,7 @@
 package com.jonggae.apigateway.sercurity.controller;
 
 
+import com.jonggae.apigateway.common.redis.TokenService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +22,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public class LogoutController {
     private static final Logger logger = LoggerFactory.getLogger(LogoutController.class);
-
+    private final TokenService tokenService;
     private final ReactiveRedisTemplate<String, String> reactiveRedisTemplate;
 
     @PostMapping("/auth/logout")
@@ -36,8 +37,8 @@ public class LogoutController {
 
         Mono<Boolean> refreshTokenDeletion = Mono.just(true);
         if (refreshToken != null) {
-            refreshTokenDeletion = reactiveRedisTemplate.hasKey(refreshToken)
-                    .flatMap(exists -> exists ? reactiveRedisTemplate.delete(refreshToken).thenReturn(true) : Mono.just(false));
+            refreshTokenDeletion = tokenService.deleteRefreshToken(refreshToken)
+                    .thenReturn(true);
         }
 
         Mono<Boolean> accessTokenBlacklisting = Mono.just(true);
