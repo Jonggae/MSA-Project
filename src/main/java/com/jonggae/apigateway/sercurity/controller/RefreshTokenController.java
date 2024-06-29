@@ -22,7 +22,7 @@ public class RefreshTokenController {
     private final TokenService tokenService;
 
     // 재발급 받는 과정
-    @PostMapping("/api/auth/refresh")
+    @PostMapping("/auth/refresh")
     public Mono<ResponseEntity<?>> refreshAccessToken(@RequestBody Map<String, String> request) {
         String refreshToken = request.get("refreshToken");
 
@@ -36,12 +36,21 @@ public class RefreshTokenController {
                         return Mono.just(ResponseEntity.badRequest().body("Invalid refresh token"));
                     }
 
-                    return Mono.just(tokenProvider.getCustomerNameFromToken(refreshToken))
+                    return tokenProvider.getCustomerNameFromToken(refreshToken)
                             .flatMap(customerName -> {
-                                String storedCustomerName = tokenService.getCustomerNameByRefreshToken(refreshToken);
+                                return tokenService.getCustomerNameByRefreshToken(refreshToken)
+                                        .flatMap(storedCustomerName -> {
+                                            if (storedCustomerName == null || !storedCustomerName.equals(customerName)) {
+                                                log.info("저장된 고객 이름이 토큰의 고객 이름과 일치하지 않습니다: {}", customerName);
+                                                return Mono.just(ResponseEntity.badRequest().body("Invalid refresh token"));
+                                            }
 
-                                return Mono.just(ResponseEntity.badRequest().body("Invalid refresh token"));
-
+                                            return tokenProvider.getAuthenticationFromRefreshToken(refreshToken)
+                                                    .map(authentication -> {
+                                                        String newAccessToken = tokenProvider.createAccessToken(authentication);
+                                                        return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+                                                    });
+                                        });
                             });
                 });
     }

@@ -21,6 +21,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter;
+import org.springframework.security.web.server.authentication.logout.ServerLogoutSuccessHandler;
 import org.springframework.security.web.server.context.ServerSecurityContextRepository;
 import org.springframework.security.web.server.context.WebSessionServerSecurityContextRepository;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
@@ -31,7 +32,6 @@ import org.springframework.security.web.server.util.matcher.ServerWebExchangeMat
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
-    private final TokenProvider tokenProvider;
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -44,6 +44,7 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public ReactiveAuthenticationManager reactiveAuthenticationManager() {
         UserDetailsRepositoryReactiveAuthenticationManager authenticationManager =
@@ -72,19 +73,25 @@ public class SecurityConfig {
         http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/auth/**").permitAll()
-                        .anyExchange().permitAll()
+                        .pathMatchers("/auth/**", "/api/customers/**").permitAll()
+                        .pathMatchers("/api/products/**", "/api/orders/**").permitAll()
+                        .pathMatchers("/logout").permitAll() // 로그아웃 엔드포인트 보호
+                        .anyExchange().authenticated()
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                 )
-                .formLogin(form -> form
-                        .authenticationSuccessHandler(loginSuccessHandler)
-                        .authenticationFailureHandler(loginFailureHandler)
-                )
+
                 .addFilterAt(jwtFilter, SecurityWebFiltersOrder.AUTHORIZATION);
 
         return http.build();
+    }
+
+    @Bean
+    public ServerLogoutSuccessHandler logoutSuccessHandler() {
+        return (exchange, authentication) -> {
+            return exchange.getExchange().getResponse().setComplete(); // 리디렉션 대신 완료 응답
+        };
     }
 }

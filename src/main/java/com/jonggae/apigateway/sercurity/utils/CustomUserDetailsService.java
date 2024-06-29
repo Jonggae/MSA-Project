@@ -26,9 +26,6 @@ public class CustomUserDetailsService implements ReactiveUserDetailsService, Use
                 .uri(customerServiceUrl)
                 .retrieve()
                 .bodyToMono(CustomerResponseDto.class)
-                .doOnNext(customer -> {
-                    System.out.println("Customer retrieved: " + customer);
-                })
                 .map(customer -> {
                     List<GrantedAuthority> authorities = customer.getAuthorityDtoSet().stream()
                             .map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName().name()))

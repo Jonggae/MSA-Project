@@ -1,8 +1,7 @@
-package com.jonggae.apigateway.customer.controller;
+package com.jonggae.apigateway.login;
 
 import com.jonggae.apigateway.customer.dto.JwtResponse;
 import com.jonggae.apigateway.customer.dto.LoginRequestDto;
-import com.jonggae.apigateway.customer.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,13 +11,13 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
-public class AuthController {
+public class LoginController {
 
-    private final AuthService authService;
+    private final LoginService loginService;
 
 
     @PostMapping("/auth/login")
     public Mono<ResponseEntity<JwtResponse>> loginUser(@RequestBody LoginRequestDto loginRequestDto) {
-        return authService.authenticate(loginRequestDto);
+        return loginService.authenticate(loginRequestDto);
     }
 }

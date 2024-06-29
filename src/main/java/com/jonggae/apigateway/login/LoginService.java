@@ -1,5 +1,6 @@
-package com.jonggae.apigateway.customer.service;
+package com.jonggae.apigateway.login;
 
+import com.jonggae.apigateway.common.redis.TokenService;
 import com.jonggae.apigateway.customer.dto.CustomerResponseDto;
 import com.jonggae.apigateway.customer.dto.JwtResponse;
 import com.jonggae.apigateway.customer.dto.LoginRequestDto;
@@ -24,11 +25,12 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public class LoginService {
     private final WebClient.Builder webClientBuilder;
     private final ReactiveAuthenticationManager reactiveAuthenticationManager;
     private final TokenProvider tokenProvider;
     private final PasswordEncoder passwordEncoder;
+    private final TokenService tokenService;
 
     public Mono<ResponseEntity<JwtResponse>> authenticate(LoginRequestDto loginRequestDto) {
         String customerServiceUrl = "http://customer-service/api/customers/login";
@@ -55,6 +57,7 @@ public class AuthService {
                             .flatMap(auth -> {
                                 String accessToken = tokenProvider.createAccessToken(auth);
                                 String refreshToken = tokenProvider.createRefreshToken(auth);
+                                tokenService.saveRefreshToken(refreshToken, customer.getCustomerName());
                                 return Mono.just(ResponseEntity.ok(new JwtResponse(accessToken, refreshToken)));
                             });
 

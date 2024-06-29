@@ -13,7 +13,7 @@ spring:
         - id: customer-service
           uri: lb://customer-service
           predicates:
-            - Path=/auth/**
+            - Path=/api/customers/**
         - id: order-service
           uri: lb://order-service
           predicates:
@@ -41,7 +41,7 @@ logging:
 data:
   redis:
     host: localhost
-    port: 6379
+    port: 6380
 
 eureka:
   client:
