@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerResponseDto {
-
+    private Long customerId;
     private String customerName;
     private String email;
     private String password;
@@ -25,6 +25,7 @@ public class CustomerResponseDto {
 
     public static CustomerResponseDto from(Customer customer) {
         return CustomerResponseDto.builder()
+                .customerId(customer.getId())
                 .customerName(customer.getCustomerName())
                 .email(customer.getEmail())
                 .password(customer.getPassword())
