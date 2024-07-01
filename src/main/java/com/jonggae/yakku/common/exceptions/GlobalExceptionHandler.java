@@ -1,4 +1,4 @@
-package com.jonggae.yakku.exceptions;
+package com.jonggae.yakku.common.exceptions;
 
 import com.jonggae.yakku.common.apiResponse.ApiResponseDto;
 import com.jonggae.yakku.common.apiResponse.ApiResponseUtil;

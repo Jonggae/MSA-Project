@@ -16,18 +16,6 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
-    @PostMapping("/login")
-    public ResponseEntity<CustomerResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
-        CustomerResponseDto responseDto = customerService.login(loginRequestDto);
-        return ResponseEntity.ok(responseDto);
-    }
-
-    @GetMapping("/{customerName}")
-    public ResponseEntity<CustomerResponseDto> getCustomerByCustomerName(@PathVariable String customerName) {
-        CustomerResponseDto responseDto = customerService.getCustomerByCustomerName(customerName);
-        return ResponseEntity.ok(responseDto);
-    }
-
     //todo: 회원가입 상황에 대응한 예외 처리 작성하기 , response 응답 형태 정리하기
 
     @PostMapping("/register")

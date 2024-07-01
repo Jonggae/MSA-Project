@@ -45,6 +45,7 @@ jwt:
 logging:
     level:
       org.springframework.security: debug
+      org.springframework: debug
 
 eureka:
   client:

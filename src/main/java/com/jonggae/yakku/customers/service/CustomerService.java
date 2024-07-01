@@ -1,23 +1,24 @@
 package com.jonggae.yakku.customers.service;
 
 import com.jonggae.yakku.address.Address;
+import com.jonggae.yakku.common.exceptions.DuplicateMemberException;
+import com.jonggae.yakku.common.exceptions.NotFoundMemberException;
 import com.jonggae.yakku.common.redis.TokenService;
-import com.jonggae.yakku.customers.dto.*;
+import com.jonggae.yakku.customers.dto.CustomerMyPageResponseDto;
+import com.jonggae.yakku.customers.dto.CustomerRequestDto;
+import com.jonggae.yakku.customers.dto.CustomerResponseDto;
+import com.jonggae.yakku.customers.dto.CustomerUpdateDto;
 import com.jonggae.yakku.customers.entity.Authority;
 import com.jonggae.yakku.customers.entity.Customer;
 import com.jonggae.yakku.customers.entity.UserRoleEnum;
 import com.jonggae.yakku.customers.repository.AuthorityRepository;
 import com.jonggae.yakku.customers.repository.CustomerRepository;
-import com.jonggae.yakku.exceptions.DuplicateMemberException;
-import com.jonggae.yakku.exceptions.NotFoundMemberException;
 import com.jonggae.yakku.mailVerification.service.MailService;
 import com.jonggae.yakku.sercurity.utils.SecurityUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -103,22 +104,4 @@ public class CustomerService {
         }
     }
 
-    /////////////////////// GATEWAY 용
-    public CustomerResponseDto login(LoginRequestDto requestDto) {
-        Customer customer = customerRepository.findByCustomerName(requestDto.getCustomerName())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-        if (!passwordEncoder.matches(requestDto.getPassword(), customer.getPassword())) {
-            throw new BadCredentialsException("Invalid password");
-        }
-
-        return CustomerResponseDto.from(customer);
-    }
-
-    public CustomerResponseDto getCustomerByCustomerName(String customerName) {
-        Customer customer = customerRepository.findByCustomerName(customerName)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-        return CustomerResponseDto.from(customer);
-    }
 }

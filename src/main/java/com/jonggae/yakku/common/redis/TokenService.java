@@ -50,4 +50,16 @@ public class TokenService {
         redisTemplate.delete(token);
     }
 
+    public void saveRefreshToken(String refreshToken, String customerName) {
+        redisTemplate.opsForValue().set(refreshToken, customerName, REFRESH_TOKEN_TTL.toMillis(), TimeUnit.MILLISECONDS);
+        String storedCustomerName = redisTemplate.opsForValue().get(refreshToken);
+    }
+    public String getCustomerNameByRefreshToken(String refreshToken){
+
+        return redisTemplate.opsForValue().get(refreshToken);
+    }
+
+    public void deleteRefreshToken(String refreshToken){
+        redisTemplate.delete(refreshToken);
+    }
 }
