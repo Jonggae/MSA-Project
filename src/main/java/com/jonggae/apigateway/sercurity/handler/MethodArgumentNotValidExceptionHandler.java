@@ -1,4 +1,4 @@
-package com.jonggae.apigateway.sercurity.handler.validation;
+package com.jonggae.apigateway.sercurity.handler;
 
 
 import com.jonggae.apigateway.common.apiResponse.ApiResponseDto;

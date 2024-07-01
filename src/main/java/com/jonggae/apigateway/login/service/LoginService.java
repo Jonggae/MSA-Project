@@ -1,16 +1,15 @@
-package com.jonggae.apigateway.login;
+package com.jonggae.apigateway.login.service;
 
 import com.jonggae.apigateway.common.redis.TokenService;
-import com.jonggae.apigateway.customer.dto.CustomerResponseDto;
-import com.jonggae.apigateway.customer.dto.JwtResponse;
-import com.jonggae.apigateway.customer.dto.LoginRequestDto;
+import com.jonggae.apigateway.login.dto.CustomerResponseDto;
+import com.jonggae.apigateway.login.dto.JwtResponseDto;
+import com.jonggae.apigateway.login.dto.LoginRequestDto;
 import com.jonggae.apigateway.sercurity.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,43 +26,43 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LoginService {
     private final WebClient.Builder webClientBuilder;
-    private final ReactiveAuthenticationManager reactiveAuthenticationManager;
     private final TokenProvider tokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
 
-    public Mono<ResponseEntity<JwtResponse>> authenticate(LoginRequestDto loginRequestDto) {
-        String customerServiceUrl = "http://customer-service/api/customers/login";
+    public Mono<ResponseEntity<JwtResponseDto>> authenticate(LoginRequestDto loginRequestDto) {
+        String customerServiceUrl = "http://customer-service/api/customers/" + loginRequestDto.getCustomerName();
         return webClientBuilder.build()
-                .post()
+                .get()
                 .uri(customerServiceUrl)
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE) // 필요한 헤더 추가
-                .bodyValue(loginRequestDto)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .retrieve()
                 .bodyToMono(CustomerResponseDto.class)
                 .flatMap(customer -> {
-
                     if (!passwordEncoder.matches(loginRequestDto.getPassword(), customer.getPassword())) {
                         return Mono.error(new BadCredentialsException("Invalid password"));
                     }
                     List<GrantedAuthority> authorities = customer.getAuthorityDtoSet().stream()
                             .map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName().name()))
                             .collect(Collectors.toList());
-
                     Authentication authentication = new UsernamePasswordAuthenticationToken(
-                            customer.getCustomerName(), loginRequestDto.getPassword(), authorities
+                            customer.getCustomerName(), null, authorities
                     );
-                    return reactiveAuthenticationManager.authenticate(authentication)
-                            .flatMap(auth -> {
-                                String accessToken = tokenProvider.createAccessToken(auth);
-                                String refreshToken = tokenProvider.createRefreshToken(auth);
-                                tokenService.saveRefreshToken(refreshToken, customer.getCustomerName());
-                                return Mono.just(ResponseEntity.ok(new JwtResponse(accessToken, refreshToken)));
-                            });
 
+                    // JWT 토큰 생성
+                    String accessToken = tokenProvider.createAccessToken(authentication, customer.getCustomerId());
+                    String refreshToken = tokenProvider.createRefreshToken(authentication, customer.getCustomerId());
+
+                    // Refresh 토큰 저장
+                    tokenService.saveRefreshToken(refreshToken, customer.getCustomerName());
+
+                    // JWT 응답 생성
+                    JwtResponseDto jwtResponseDto = new JwtResponseDto(accessToken, refreshToken);
+
+                    return Mono.just(ResponseEntity.ok(jwtResponseDto));
                 })
                 .onErrorResume(e -> {
-                    JwtResponse errorResponse = new JwtResponse("Login failed", null);
+                    JwtResponseDto errorResponse = new JwtResponseDto("Login failed", null);
                     return Mono.just(ResponseEntity.status(401).body(errorResponse));
                 });
     }

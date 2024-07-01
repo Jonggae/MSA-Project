@@ -1,4 +1,4 @@
-package com.jonggae.apigateway.sercurity.handler.jwt;
+package com.jonggae.apigateway.sercurity.handler;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;

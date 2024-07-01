@@ -1,8 +1,10 @@
 package com.jonggae.apigateway.sercurity.jwt;
 
+import com.jonggae.apigateway.sercurity.utils.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextImpl;
@@ -19,31 +21,50 @@ import reactor.core.publisher.Mono;
 public class JwtFilter implements WebFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
-
     private final TokenProvider tokenProvider;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-        return ServerWebExchangeMatchers.pathMatchers("/api/**")
-                .matches(exchange)
-                .filter(ServerWebExchangeMatcher.MatchResult::isMatch)
-                .flatMap(matchResult -> extractToken(exchange))
-                .flatMap(token -> tokenProvider.validateToken(token)
-                        .filter(valid -> valid)
-                        .flatMap(valid -> tokenProvider.getAuthentication(token))
-                        .flatMap(authentication -> {
-                            SecurityContext context = new SecurityContextImpl(authentication);
-                            logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), exchange.getRequest().getURI());
-                            return chain.filter(exchange)
-                                    .contextWrite(ReactiveSecurityContextHolder.withSecurityContext(Mono.just(context)));
-                        })
-                )
-                .switchIfEmpty(chain.filter(exchange));
-    }
-
-    private Mono<String> extractToken(ServerWebExchange exchange) {
         return Mono.justOrEmpty(exchange.getRequest().getHeaders().getFirst("Authorization"))
-                .filter(bearerToken -> bearerToken.startsWith("Bearer "))
-                .map(bearerToken -> bearerToken.substring(7));
+                .filter(bearerToken -> {
+                    boolean startsWithBearer = bearerToken.startsWith("Bearer ");
+                    if (!startsWithBearer) {
+                        logger.info("Authorization header does not start with Bearer");
+                    }
+                    return startsWithBearer;
+                })
+                .map(bearerToken -> bearerToken.substring(7))
+                .flatMap(token -> {
+                    logger.debug("Validating token: {}", token);
+                    return tokenProvider.validateToken(token)
+                            .flatMap(valid -> {
+                                if (valid) {
+                                    logger.debug("Token is valid");
+                                    return tokenProvider.getAuthentication(token)
+                                            .flatMap(authentication -> {
+                                                logger.debug("Authentication successful: {}", authentication);
+                                                SecurityContextImpl securityContext = new SecurityContextImpl(authentication);
+                                                return tokenProvider.getCustomerIdFromToken(token)
+                                                        .flatMap(customerId -> tokenProvider.getCustomerNameFromToken(token)
+                                                                .flatMap(customerName -> {
+                                                                    exchange.getRequest().mutate()
+                                                                            .header("X-Customer-Id", String.valueOf(customerId))
+                                                                            .header("X-Customer-Name", customerName)
+                                                                            .build();
+                                                                    return chain.filter(exchange)
+                                                                            .contextWrite(ReactiveSecurityContextHolder.withSecurityContext(Mono.just(securityContext)));
+                                                                }));
+                                            });
+                                } else {
+                                    logger.info("Invalid JWT token: {}", token);
+                                    return Mono.empty();
+                                }
+                            });
+                })
+                .onErrorResume(e -> {
+                    logger.error("JWT validation error", e);
+                    return chain.filter(exchange);
+                })
+                .switchIfEmpty(chain.filter(exchange));
     }
 }

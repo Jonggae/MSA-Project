@@ -1,6 +1,6 @@
-package com.jonggae.apigateway.customer.dto;
+package com.jonggae.apigateway.login.dto;
 
-import com.jonggae.apigateway.customer.entity.UserRoleEnum;
+import com.jonggae.apigateway.login.entity.UserRoleEnum;
 import lombok.*;
 
 @Getter

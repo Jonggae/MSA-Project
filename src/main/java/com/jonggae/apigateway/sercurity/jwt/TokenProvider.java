@@ -56,11 +56,14 @@ public class TokenProvider implements InitializingBean {
     public void afterPropertiesSet() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
+        logger.debug("Signing key initialized with hash: {}", Arrays.hashCode(keyBytes));
+
 
         byte[] refreshKeyBytes = Decoders.BASE64.decode(refreshSecretKey);
         this.refreshKey = Keys.hmacShaKeyFor(refreshKeyBytes);
-    }
+        logger.debug("Refresh signing key initialized with hash: {}", Arrays.hashCode(refreshKeyBytes));
 
+    }
 
     // 액세스 토큰을 생성함
     public String createAccessToken(Authentication authentication, Long customerId) {
@@ -71,13 +74,16 @@ public class TokenProvider implements InitializingBean {
         long now = (new Date()).getTime();
         Date validity = new Date(now + this.tokenExpirationTime);
 
-        return Jwts.builder()
+        String token =  Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
                 .claim(CUSTOMER_ID_KEY, customerId)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(validity)
                 .compact();
+        logger.debug("Access token created with claims: auth={}, customerId={}, expiration={}", authorities, customerId, validity);
+        logger.debug("Access token: {}", token.substring(0, Math.min(50, token.length())) + "...");
+        return token;
     }
 
     // 리프래시 토큰을 생성함
@@ -99,6 +105,7 @@ public class TokenProvider implements InitializingBean {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+        logger.debug("Claims parsed from token: {}", claims);
 
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
@@ -143,27 +150,20 @@ public class TokenProvider implements InitializingBean {
     }
 
     public Mono<Boolean> validateToken(String token) {
-        return redisTemplate.hasKey(token)
-                .map(exists -> !exists)
-                .flatMap(valid -> {
-                    if (!valid) {
-                        logger.info("토큰이 Redis에 존재하지 않습니다: {}", token);
-                        return Mono.just(false);
-                    }
-                    try {
-                        Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-                        return Mono.just(true);
-                    } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-                        logger.info("잘못된 AccessToken 서명입니다: {}", token);
-                    } catch (ExpiredJwtException e) {
-                        logger.info("만료된 JWT 토큰입니다: {}", token);
-                    } catch (UnsupportedJwtException e) {
-                        logger.info("지원되지 않는 JWT 토큰입니다: {}", token);
-                    } catch (IllegalArgumentException e) {
-                        logger.info("JWT 토큰이 잘못되었습니다: {}", token);
-                    }
-                    return Mono.just(false);
-                });
+        logger.debug("Validating token: {}", token);
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            return Mono.just(true);
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+            logger.info("잘못된 AccessToken 서명입니다: {}", token);
+        } catch (ExpiredJwtException e) {
+            logger.info("만료된 JWT 토큰입니다: {}", token);
+        } catch (UnsupportedJwtException e) {
+            logger.info("지원되지 않는 JWT 토큰입니다: {}", token);
+        } catch (IllegalArgumentException e) {
+            logger.info("JWT 토큰이 잘못되었습니다: {}", token);
+        }
+        return Mono.just(false);
     }
 
 

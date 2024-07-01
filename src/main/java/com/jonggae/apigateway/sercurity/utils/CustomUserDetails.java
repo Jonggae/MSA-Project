@@ -1,6 +1,6 @@
 package com.jonggae.apigateway.sercurity.utils;
 
-import com.jonggae.apigateway.customer.dto.CustomerResponseDto;
+import com.jonggae.apigateway.login.dto.CustomerResponseDto;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +18,9 @@ public class CustomUserDetails implements UserDetails {
         this.authorities = authorities;
     }
 
+    public Long getCustomerId() {
+        return customer.getCustomerId();
+    }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;

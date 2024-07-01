@@ -1,6 +1,6 @@
 package com.jonggae.apigateway.sercurity.utils;
 
-import com.jonggae.apigateway.customer.dto.CustomerResponseDto;
+import com.jonggae.apigateway.login.dto.CustomerResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

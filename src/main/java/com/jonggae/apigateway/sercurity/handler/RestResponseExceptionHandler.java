@@ -1,4 +1,4 @@
-package com.jonggae.apigateway.sercurity.handler.login;
+package com.jonggae.apigateway.sercurity.handler;
 
 
 import com.jonggae.apigateway.common.apiResponse.ApiResponseDto;

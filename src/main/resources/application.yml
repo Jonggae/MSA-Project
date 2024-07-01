@@ -18,6 +18,9 @@ spring:
           uri: lb://order-service
           predicates:
             - Path=/api/orders/**
+          filters:
+            - StripPrefix=1
+            - AddRequestHeader=Authorization, $request.headers.Authorization
         - id: product-service
           uri: lb://product-service
           predicates:
@@ -30,7 +33,7 @@ jwt:
   refresh:
     secret:
       key: ${JWT_REFRESH_SECRET_KEY}
-  expiration_time: 3600
+  expiration_time: 600
   refresh_expiration_time: 604800
 
 logging:

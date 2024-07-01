@@ -1,4 +1,4 @@
-package com.jonggae.apigateway.logout;
+package com.jonggae.apigateway.logout.service;
 
 
 import com.jonggae.apigateway.common.redis.TokenService;

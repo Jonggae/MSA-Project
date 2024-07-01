@@ -1,4 +1,4 @@
-package com.jonggae.apigateway.customer.dto;
+package com.jonggae.apigateway.login.dto;
 
 import lombok.*;
 
@@ -11,6 +11,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class CustomerResponseDto {
 
+    private Long customerId;
     private String customerName;
 
     private String password;

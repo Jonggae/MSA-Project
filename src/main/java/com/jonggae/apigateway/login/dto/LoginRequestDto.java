@@ -1,4 +1,4 @@
-package com.jonggae.apigateway.customer.dto;
+package com.jonggae.apigateway.login.dto;
 
 
 import lombok.AllArgsConstructor;

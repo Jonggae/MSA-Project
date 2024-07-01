@@ -1,7 +1,8 @@
-package com.jonggae.apigateway.login;
+package com.jonggae.apigateway.login.contorller;
 
-import com.jonggae.apigateway.customer.dto.JwtResponse;
-import com.jonggae.apigateway.customer.dto.LoginRequestDto;
+import com.jonggae.apigateway.login.service.LoginService;
+import com.jonggae.apigateway.login.dto.JwtResponseDto;
+import com.jonggae.apigateway.login.dto.LoginRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +18,7 @@ public class LoginController {
 
 
     @PostMapping("/auth/login")
-    public Mono<ResponseEntity<JwtResponse>> loginUser(@RequestBody LoginRequestDto loginRequestDto) {
+    public Mono<ResponseEntity<JwtResponseDto>> loginUser(@RequestBody LoginRequestDto loginRequestDto) {
         return loginService.authenticate(loginRequestDto);
     }
 }

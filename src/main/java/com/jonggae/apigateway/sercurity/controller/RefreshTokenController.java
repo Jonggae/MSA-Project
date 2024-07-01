@@ -45,11 +45,12 @@ public class RefreshTokenController {
                                                 return Mono.just(ResponseEntity.badRequest().body("Invalid refresh token"));
                                             }
 
-                                            return tokenProvider.getAuthenticationFromRefreshToken(refreshToken)
-                                                    .map(authentication -> {
-                                                        String newAccessToken = tokenProvider.createAccessToken(authentication);
-                                                        return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
-                                                    });
+                                            return tokenProvider.getCustomerIdFromToken(refreshToken)
+                                                    .flatMap(customerId -> tokenProvider.getAuthenticationFromRefreshToken(refreshToken)
+                                                            .map(authentication -> {
+                                                                String newAccessToken = tokenProvider.createAccessToken(authentication, customerId);
+                                                                return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+                                                            }));
                                         });
                             });
                 });
