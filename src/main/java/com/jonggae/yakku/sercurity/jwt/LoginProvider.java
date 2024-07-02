@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 public class LoginProvider implements AuthenticationProvider {
 
     private final UserDetailsService userDetailsService;
+
     public LoginProvider(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
@@ -26,7 +27,7 @@ public class LoginProvider implements AuthenticationProvider {
         UserDetails userDetails = userDetailsService.loadUserByUsername(customerName);
 
         if (new BCryptPasswordEncoder().matches(password, userDetails.getPassword())) {
-            return new UsernamePasswordAuthenticationToken(customerName, password, userDetails.getAuthorities());
+            return new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
         } else {
             throw new BadCredentialsException("로그인 실패");
         }

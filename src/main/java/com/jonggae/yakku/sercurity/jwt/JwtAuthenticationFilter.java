@@ -21,11 +21,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public JwtAuthenticationFilter(LoginProvider loginProvider, LoginSuccessHandler successHandler, LoginFailureHandler failureHandler) {
         super();
         this.loginProvider = loginProvider;
-        // 성공 핸들러와 실패 핸들러 설정
         this.setAuthenticationSuccessHandler(successHandler);
         this.setAuthenticationFailureHandler(failureHandler);
 
-        // 로그인 URL 설정
         setFilterProcessesUrl("/api/customers/login");
     }
 

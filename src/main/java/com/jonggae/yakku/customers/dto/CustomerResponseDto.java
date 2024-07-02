@@ -17,7 +17,6 @@ public class CustomerResponseDto {
     private Long customerId;
     private String customerName;
     private String email;
-    private String password;
     private String address;
     private String addressDetail;
     private boolean enabled;
@@ -28,7 +27,6 @@ public class CustomerResponseDto {
                 .customerId(customer.getId())
                 .customerName(customer.getCustomerName())
                 .email(customer.getEmail())
-                .password(customer.getPassword())
                 .address(customer.getAddress().getAddress())
                 .addressDetail(customer.getAddress().getAddressDetail())
                 .authorityDtoSet(customer.getAuthorities().stream()

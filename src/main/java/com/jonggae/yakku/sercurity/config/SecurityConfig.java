@@ -4,8 +4,9 @@ import com.jonggae.yakku.sercurity.handler.jwt.JwtAccessDeniedHandler;
 import com.jonggae.yakku.sercurity.handler.jwt.JwtAuthenticationEntryPoint;
 import com.jonggae.yakku.sercurity.handler.login.LoginFailureHandler;
 import com.jonggae.yakku.sercurity.handler.login.LoginSuccessHandler;
-import com.jonggae.yakku.sercurity.jwt.*;
-import com.jonggae.yakku.sercurity.utils.CustomUserDetailsService;
+import com.jonggae.yakku.sercurity.jwt.JwtAuthenticationFilter;
+import com.jonggae.yakku.sercurity.jwt.JwtFilter;
+import com.jonggae.yakku.sercurity.jwt.LoginProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +30,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
-    private final TokenProvider tokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -60,11 +60,6 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(tokenProvider, jwtFilter);
-    }
-
-    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((authorizeRequests) -> authorizeRequests
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
@@ -82,10 +77,8 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.csrf(AbstractHttpConfigurer::disable); // CSRF 보호 비활성화 (필요에 따라 활성화)
 
-         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class) // JWT 인증 필터 추가
-                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class); // JWT 권한 필터 추가
-
-
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); //
 
         return http.build();
     }

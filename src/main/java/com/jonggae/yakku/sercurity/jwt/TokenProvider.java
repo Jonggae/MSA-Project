@@ -1,5 +1,6 @@
 package com.jonggae.yakku.sercurity.jwt;
 
+import com.jonggae.yakku.sercurity.utils.CustomUserDetails;
 import com.jonggae.yakku.sercurity.utils.CustomUserDetailsService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -13,7 +14,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +29,7 @@ public class TokenProvider implements InitializingBean {
     private final RedisTemplate<String, String> redisTemplate;
     private final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
     private static final String AUTHORITIES_KEY = "auth";
+    private static final String CUSTOMER_ID_KEY = "customerId";
     private final String secretKey;
     private final String refreshSecretKey;
     private final long tokenExpirationTime;
@@ -38,7 +39,8 @@ public class TokenProvider implements InitializingBean {
     private Key refreshKey;
 
     public TokenProvider(
-            RedisTemplate<String, String> redisTemplate, @Value("${jwt.secret.key}") String secretKey,
+            RedisTemplate<String, String> redisTemplate,
+            @Value("${jwt.secret.key}") String secretKey,
             @Value("${jwt.refresh.secret.key}") String refreshSecretKey,
             @Value("${jwt.expiration_time}") long tokenExpirationTime,
             @Value("${jwt.refresh_expiration_time}") long refreshTokenExpirationTime, CustomUserDetailsService customUserDetailsService) {
@@ -61,6 +63,9 @@ public class TokenProvider implements InitializingBean {
 
     // 액세스 토큰을 생성함
     public String createAccessToken(Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Long customerId = userDetails.getCustomerId();
+
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
@@ -71,17 +76,23 @@ public class TokenProvider implements InitializingBean {
         return Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
+                .claim(CUSTOMER_ID_KEY, customerId)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(validity)
                 .compact();
     }
+
     // 리프래시 토큰을 생성함
     public String createRefreshToken(Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Long customerId = userDetails.getCustomerId();
+
         long now = (new Date()).getTime();
         Date validity = new Date(now + this.refreshTokenExpirationTime);
 
         return Jwts.builder()
                 .setSubject(authentication.getName())
+                .claim(CUSTOMER_ID_KEY, customerId)
                 .signWith(refreshKey, SignatureAlgorithm.HS512)
                 .setExpiration(validity)
                 .compact();
@@ -126,11 +137,16 @@ public class TokenProvider implements InitializingBean {
                 .getBody();
         return claims.getSubject();
     }
+    public Long getCustomerIdFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get(CUSTOMER_ID_KEY, Long.class);
+    }
 
     public boolean validateToken(String token) {
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(token))) {
-            return false;
-        }
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
@@ -147,18 +163,24 @@ public class TokenProvider implements InitializingBean {
     }
 
     public boolean validateRefreshToken(String token) {
-        try {
-            Jwts.parserBuilder().setSigningKey(refreshKey).build().parseClaimsJws(token);
-            return true;
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            logger.info("잘못된 RefreshToken 서명입니다.");
-        } catch (ExpiredJwtException e) {
-            logger.info("만료된 JWT 리프레시 토큰입니다.");
-        } catch (UnsupportedJwtException e) {
-            logger.info("지원되지 않는 JWT 리프레시 토큰입니다.");
-        } catch (IllegalArgumentException e) {
-            logger.info("JWT 리프레시 토큰이 잘못되었습니다.");
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(token))) {
+            try {
+                Jwts.parserBuilder().setSigningKey(refreshKey).build().parseClaimsJws(token);
+                return true;
+            } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+                logger.info("잘못된 RefreshToken 서명입니다.");
+            } catch (ExpiredJwtException e) {
+                logger.info("만료된 JWT 리프레시 토큰입니다.");
+            } catch (UnsupportedJwtException e) {
+                logger.info("지원되지 않는 JWT 리프레시 토큰입니다.");
+            } catch (IllegalArgumentException e) {
+                logger.info("JWT 리프레시 토큰이 잘못되었습니다.");
+            }
+
+        }else{
+            logger.info("Redis에 토큰 정보가 없습니다.");
         }
         return false;
+
     }
 }

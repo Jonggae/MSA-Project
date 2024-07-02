@@ -3,9 +3,11 @@ package com.jonggae.yakku.sercurity.handler.login;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jonggae.yakku.common.redis.TokenService;
 import com.jonggae.yakku.sercurity.jwt.TokenProvider;
+import com.jonggae.yakku.sercurity.utils.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +28,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
+
         String accessToken = tokenProvider.createAccessToken(authentication);
         String refreshToken = tokenProvider.createRefreshToken(authentication);
 
