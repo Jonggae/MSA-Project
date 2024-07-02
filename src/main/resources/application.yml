@@ -1,6 +1,8 @@
 server:
   port: 8080
 spring:
+  main:
+    allow-bean-definition-overriding: true
   application:
     name: api-gateway
   cloud:
@@ -14,14 +16,19 @@ spring:
           uri: lb://customer-service
           predicates:
             - Path=/api/customers/**
+
         - id: order-service
           uri: lb://order-service
           predicates:
             - Path=/api/orders/**
+
         - id: product-service
           uri: lb://product-service
           predicates:
             - Path=/api/products/**
+      default-filters:
+        - name: ApiGatewayFilter
+
 
 jwt:
   header: Authorization
@@ -30,18 +37,15 @@ jwt:
   refresh:
     secret:
       key: ${JWT_REFRESH_SECRET_KEY}
-  expiration_time: 3600
+  expiration_time: 6000
   refresh_expiration_time: 604800
 
 logging:
   level:
     org.springframework.security: debug
-#    org.springframework: debug
-
-data:
-  redis:
-    host: localhost
-    port: 6380
+    org.springframework: debug
+    org.springframework.JwtTokenUtil: debug
+    org.springframework.ApiGatewayFilter: debug
 
 eureka:
   client:
