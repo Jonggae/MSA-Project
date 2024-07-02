@@ -25,7 +25,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         this.tokenService = tokenService;
     }
 
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
 

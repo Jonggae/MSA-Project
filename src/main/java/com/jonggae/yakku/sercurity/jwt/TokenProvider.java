@@ -137,14 +137,6 @@ public class TokenProvider implements InitializingBean {
                 .getBody();
         return claims.getSubject();
     }
-    public Long getCustomerIdFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.get(CUSTOMER_ID_KEY, Long.class);
-    }
 
     public boolean validateToken(String token) {
         try {

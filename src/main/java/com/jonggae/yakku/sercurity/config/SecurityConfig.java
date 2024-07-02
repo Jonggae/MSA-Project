@@ -63,9 +63,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((authorizeRequests) -> authorizeRequests
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                .requestMatchers("/api/customers/login").permitAll()
-                .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/api/products/**").permitAll()
+                .requestMatchers("/api/customers/login",
+                        "/api/customers/register",
+                        "/api/customers/confirm").permitAll()
                 .anyRequest().authenticated());
 
         http.exceptionHandling(exceptionHandling ->

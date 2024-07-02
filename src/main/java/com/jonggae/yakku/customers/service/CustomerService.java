@@ -34,7 +34,7 @@ public class CustomerService {
     private final MailService mailService;
     private final TokenService tokenService;
     private final AuthorityRepository authorityRepository;
-    private final SecurityUtil securityUtil;
+
 
     public void register(CustomerRequestDto customerRequestDto) {
         checkCustomerInfo(customerRequestDto.getCustomerName(), customerRequestDto.getEmail());
@@ -78,20 +78,20 @@ public class CustomerService {
 
     //todo: 액세스 토큰이 만료되었을 때도 아래 오류가 뜸. 다른 예외처리로 수정필요
     //todo : 마이페이지 내에서 주문상품과 위시리스트도 보여주어야함
-    public CustomerMyPageResponseDto getMyPage() {
-        String customerName = securityUtil.getCurrentCustomerName();
-        Customer customer = customerRepository.findOneWithAuthoritiesByCustomerName(customerName)
-                .orElseThrow(NotFoundMemberException::new);
+
+    public CustomerMyPageResponseDto getMyPage(String customerName) {
+       Customer customer = customerRepository.findOneWithAuthoritiesByCustomerName(customerName)
+               .orElseThrow(NotFoundMemberException::new);
         return CustomerMyPageResponseDto.from(customer);
     }
 
     @Transactional
-    public CustomerResponseDto updateCustomerInfo(String customerName, CustomerUpdateDto updateDto) {
+    public CustomerMyPageResponseDto updateMyPage(String customerName, CustomerUpdateDto updateDto) {
         Customer customer = customerRepository.findByCustomerName(customerName)
                 .orElseThrow(NotFoundMemberException::new);
         customer.updateCustomerInfo(updateDto, passwordEncoder);
         customerRepository.save(customer);
-        return CustomerResponseDto.from(customer);
+        return CustomerMyPageResponseDto.from(customer);
 
     }
 
