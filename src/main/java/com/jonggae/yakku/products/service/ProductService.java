@@ -16,11 +16,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-/*
-* - 등록되어 있는 상품의 리스트를 보여주고 사용자가 구매할 수 있는 인터페이스를 제공합니다.
-  - 상품을 클릭시 상품의 상세 정보를 제공해야합니다.
-  - 상품의 재고 관리를 위한 유저 인터페이스는 별도로 구현하지 않습니다.*/
-
 @Service
 @RequiredArgsConstructor
 public class ProductService {

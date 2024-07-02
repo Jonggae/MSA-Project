@@ -11,10 +11,10 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
-      - my_network
+      - eureka-network
 
 volumes:
   mysql_data:
 
 networks:
-  my_network:
+  eureka-network:

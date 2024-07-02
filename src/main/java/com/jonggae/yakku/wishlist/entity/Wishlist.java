@@ -1,6 +1,5 @@
 package com.jonggae.yakku.wishlist.entity;
 
-import com.jonggae.yakku.customers.entity.Customer;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,14 +23,15 @@ public class Wishlist {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @OneToOne
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
+
+    @Column(name = "customer_id")
+    private Long customerId;
 
     @OneToMany(mappedBy = "wishlist")
     private List<WishlistItem> wishlistItemList = new ArrayList<>();
 
 
     public Wishlist(Long customerId) {
+        this.customerId = customerId;
     }
 }
