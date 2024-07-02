@@ -16,14 +16,18 @@ spring:
           uri: lb://customer-service
           predicates:
             - Path=/api/customers/**
+
         - id: order-service
           uri: lb://order-service
           predicates:
             - Path=/api/orders/**
+
         - id: product-service
           uri: lb://product-service
           predicates:
             - Path=/api/products/**
+      default-filters:
+        - name: ApiGatewayFilter
 
 
 jwt:
@@ -40,11 +44,8 @@ logging:
   level:
     org.springframework.security: debug
     org.springframework: debug
-
-data:
-  redis:
-    host: localhost
-    port: 6380
+    org.springframework.JwtTokenUtil: debug
+    org.springframework.ApiGatewayFilter: debug
 
 eureka:
   client:
