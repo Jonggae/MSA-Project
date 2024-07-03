@@ -1,5 +1,6 @@
 package com.jonggae.yakku.wishlist.service;
 
+import com.jonggae.yakku.wishlist.dto.WishlistItemDto;
 import com.jonggae.yakku.wishlist.entity.Wishlist;
 import com.jonggae.yakku.wishlist.entity.WishlistItem;
 import com.jonggae.yakku.wishlist.repository.WishlistItemRepository;
@@ -7,6 +8,8 @@ import com.jonggae.yakku.wishlist.repository.WishlistRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,21 +19,11 @@ public class WishlistService {
     private final WishlistRepository wishlistRepository;
     private final WishlistItemRepository wishlistItemRepository;
 
-    public List<WishlistItem> getWishlistForUser(Long customerId) {
-        Optional<Wishlist> wishlist = wishlistRepository.findByCustomerId(customerId);
-        return wishlist.map(value -> wishlistItemRepository.findByWishlistId(value.getId())).orElse(null);
+    public List<WishlistItemDto> getWishlist(Long customerId){
+        return Collections.emptyList();
     }
 
-    public WishlistItem addItemToWishlist(Long customerId, WishlistItem item) {
-        Optional<Wishlist> wishlist = wishlistRepository.findByCustomerId(customerId);
-        if (wishlist.isPresent()) {
-            item.setWishlist(wishlist.get());
-            return wishlistItemRepository.save(item);
-        } else {
-            // 위시리스트가 없는 경우 예외 처리
-            throw new RuntimeException("Wishlist not found for customer id: " + customerId);
-        }
-    }
+
 }
 
 
