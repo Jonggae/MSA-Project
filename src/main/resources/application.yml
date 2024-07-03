@@ -7,6 +7,7 @@ spring:
     name: api-gateway
   cloud:
     gateway:
+
       discovery:
         locator:
           enabled: true
@@ -25,9 +26,23 @@ spring:
         - id: product-service
           uri: lb://product-service
           predicates:
-            - Path=/api/products/**
+            - Path=/api/products/**, /api/wishlist/**
+
+
       default-filters:
         - name: ApiGatewayFilter
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origin-patterns: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
 
 
 jwt:
@@ -42,10 +57,11 @@ jwt:
 
 logging:
   level:
-    org.springframework.security: debug
+    org.springframework.cloud.gateway: trace
     org.springframework: debug
-    org.springframework.JwtTokenUtil: debug
-    org.springframework.ApiGatewayFilter: debug
+    reactor.netty.http.client: debug
+
+
 
 eureka:
   client:

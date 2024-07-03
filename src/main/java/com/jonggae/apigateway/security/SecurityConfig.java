@@ -20,8 +20,6 @@ public class SecurityConfig {
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
 
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/api/customers/login").permitAll()
-                        .pathMatchers("/api/products/**").permitAll()
                         .anyExchange().permitAll()
                 )
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance());
