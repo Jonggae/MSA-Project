@@ -1,6 +1,10 @@
+server:
+  port: 8081
 spring:
+  application:
+    name: customer-service
   datasource:
-    url: jdbc:mysql://my_mysql_container:3306/yakku_database
+    url: jdbc:mysql://customer_service_container:3306/customer_database
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -25,6 +29,10 @@ spring:
           timeout: 5000
           starttls:
               enable: true
+  data:
+    redis:
+      host: customer_service_redis
+      port: 6379
 jwt:
   header: Authorization
   secret:
@@ -36,8 +44,23 @@ jwt:
   refresh_expiration_time: 604800
 logging:
     level:
-      org.springframework.security: debug
-data:
-  redis:
-    host: localhost
-    port: 6379
+      org.springframework.security: DEBUG
+      com.jonggae.yakku: debug
+      org.springframework.web: debug
+      org.springframework.boot.autoconfigure.security: debug
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

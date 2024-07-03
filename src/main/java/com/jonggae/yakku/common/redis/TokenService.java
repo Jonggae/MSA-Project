@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 @Service
 @AllArgsConstructor
 public class TokenService {
-    private static final Logger logger = LoggerFactory.getLogger(TokenService.class);
     private static final Duration EMAIL_TOKEN_TTL = Duration.ofMinutes(10);
     private static final Duration REFRESH_TOKEN_TTL = Duration.ofHours(1);
 
@@ -50,7 +49,6 @@ public class TokenService {
     public void deleteEmailToken(String token) {
         redisTemplate.delete(token);
     }
-
 
     public void saveRefreshToken(String refreshToken, String customerName) {
         redisTemplate.opsForValue().set(refreshToken, customerName, REFRESH_TOKEN_TTL.toMillis(), TimeUnit.MILLISECONDS);

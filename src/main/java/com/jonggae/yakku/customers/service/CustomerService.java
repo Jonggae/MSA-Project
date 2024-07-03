@@ -1,7 +1,10 @@
 package com.jonggae.yakku.customers.service;
 
 import com.jonggae.yakku.address.Address;
+import com.jonggae.yakku.common.exceptions.DuplicateMemberException;
+import com.jonggae.yakku.common.exceptions.NotFoundMemberException;
 import com.jonggae.yakku.common.redis.TokenService;
+import com.jonggae.yakku.customers.dto.CustomerMyPageResponseDto;
 import com.jonggae.yakku.customers.dto.CustomerRequestDto;
 import com.jonggae.yakku.customers.dto.CustomerResponseDto;
 import com.jonggae.yakku.customers.dto.CustomerUpdateDto;
@@ -10,10 +13,7 @@ import com.jonggae.yakku.customers.entity.Customer;
 import com.jonggae.yakku.customers.entity.UserRoleEnum;
 import com.jonggae.yakku.customers.repository.AuthorityRepository;
 import com.jonggae.yakku.customers.repository.CustomerRepository;
-import com.jonggae.yakku.exceptions.DuplicateMemberException;
-import com.jonggae.yakku.exceptions.NotFoundMemberException;
 import com.jonggae.yakku.mailVerification.service.MailService;
-import com.jonggae.yakku.sercurity.utils.SecurityUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.beans.Transient;
 import java.util.Collections;
 
 @Service
@@ -34,9 +33,11 @@ public class CustomerService {
     private final MailService mailService;
     private final TokenService tokenService;
     private final AuthorityRepository authorityRepository;
-    private final SecurityUtil securityUtil;
+
 
     public void register(CustomerRequestDto customerRequestDto) {
+        logger.debug("Registering customer: {}", customerRequestDto);
+
         checkCustomerInfo(customerRequestDto.getCustomerName(), customerRequestDto.getEmail());
 
         String token = tokenService.createEmailToken(customerRequestDto.getEmail(), customerRequestDto);
@@ -78,20 +79,20 @@ public class CustomerService {
 
     //todo: 액세스 토큰이 만료되었을 때도 아래 오류가 뜸. 다른 예외처리로 수정필요
     //todo : 마이페이지 내에서 주문상품과 위시리스트도 보여주어야함
-    public CustomerResponseDto getMyPage() {
-        String customerName = securityUtil.getCurrentCustomerName();
+
+    public CustomerMyPageResponseDto getMyPage(String customerName) {
         Customer customer = customerRepository.findOneWithAuthoritiesByCustomerName(customerName)
                 .orElseThrow(NotFoundMemberException::new);
-        return CustomerResponseDto.from(customer);
+        return CustomerMyPageResponseDto.from(customer);
     }
 
     @Transactional
-    public CustomerResponseDto updateCustomerInfo(String customerName, CustomerUpdateDto updateDto) {
+    public CustomerMyPageResponseDto updateMyPage(String customerName, CustomerUpdateDto updateDto) {
         Customer customer = customerRepository.findByCustomerName(customerName)
                 .orElseThrow(NotFoundMemberException::new);
         customer.updateCustomerInfo(updateDto, passwordEncoder);
         customerRepository.save(customer);
-        return CustomerResponseDto.from(customer);
+        return CustomerMyPageResponseDto.from(customer);
 
     }
 
@@ -103,4 +104,5 @@ public class CustomerService {
             throw new DuplicateMemberException("이미 사용중인 이메일 주소 입니다.");
         }
     }
+
 }

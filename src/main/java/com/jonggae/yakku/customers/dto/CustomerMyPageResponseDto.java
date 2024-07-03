@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomerResponseDto {
-    private Long customerId;
+public class CustomerMyPageResponseDto {
+
     private String customerName;
     private String email;
     private String address;
@@ -22,9 +22,8 @@ public class CustomerResponseDto {
     private boolean enabled;
     private Set<AuthorityDto> authorityDtoSet;
 
-    public static CustomerResponseDto from(Customer customer) {
-        return CustomerResponseDto.builder()
-                .customerId(customer.getId())
+    public static CustomerMyPageResponseDto from(Customer customer) {
+        return CustomerMyPageResponseDto.builder()
                 .customerName(customer.getCustomerName())
                 .email(customer.getEmail())
                 .address(customer.getAddress().getAddress())

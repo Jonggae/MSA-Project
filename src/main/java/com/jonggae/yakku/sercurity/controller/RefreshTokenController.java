@@ -37,6 +37,7 @@ public class RefreshTokenController {
         }
 
         Authentication authentication = tokenProvider.getAuthenticationFromRefreshToken(refreshToken);
+
         String newAccessToken = tokenProvider.createAccessToken(authentication);
 
         return ResponseEntity.ok(Map.of("accessToken", newAccessToken));

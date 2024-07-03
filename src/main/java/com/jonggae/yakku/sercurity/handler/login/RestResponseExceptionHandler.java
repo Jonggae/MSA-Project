@@ -2,7 +2,7 @@ package com.jonggae.yakku.sercurity.handler.login;
 
 import com.jonggae.yakku.common.apiResponse.ApiResponseDto;
 import com.jonggae.yakku.common.apiResponse.ApiResponseUtil;
-import com.jonggae.yakku.exceptions.DuplicateMemberException;
+import com.jonggae.yakku.common.exceptions.DuplicateMemberException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
