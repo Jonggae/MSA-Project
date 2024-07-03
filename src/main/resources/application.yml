@@ -44,8 +44,11 @@ jwt:
   refresh_expiration_time: 604800
 logging:
     level:
-      org.springframework.security: debug
-      com.jonggae.yakku.customer: DEBUG
+      org.springframework.security: DEBUG
+      com.jonggae.yakku: debug
+      org.springframework.web: debug
+      org.springframework.boot.autoconfigure.security: debug
+
 
 eureka:
   client:

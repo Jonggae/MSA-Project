@@ -14,7 +14,6 @@ import com.jonggae.yakku.customers.entity.UserRoleEnum;
 import com.jonggae.yakku.customers.repository.AuthorityRepository;
 import com.jonggae.yakku.customers.repository.CustomerRepository;
 import com.jonggae.yakku.mailVerification.service.MailService;
-import com.jonggae.yakku.sercurity.utils.SecurityUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -37,6 +36,8 @@ public class CustomerService {
 
 
     public void register(CustomerRequestDto customerRequestDto) {
+        logger.debug("Registering customer: {}", customerRequestDto);
+
         checkCustomerInfo(customerRequestDto.getCustomerName(), customerRequestDto.getEmail());
 
         String token = tokenService.createEmailToken(customerRequestDto.getEmail(), customerRequestDto);
@@ -80,8 +81,8 @@ public class CustomerService {
     //todo : 마이페이지 내에서 주문상품과 위시리스트도 보여주어야함
 
     public CustomerMyPageResponseDto getMyPage(String customerName) {
-       Customer customer = customerRepository.findOneWithAuthoritiesByCustomerName(customerName)
-               .orElseThrow(NotFoundMemberException::new);
+        Customer customer = customerRepository.findOneWithAuthoritiesByCustomerName(customerName)
+                .orElseThrow(NotFoundMemberException::new);
         return CustomerMyPageResponseDto.from(customer);
     }
 

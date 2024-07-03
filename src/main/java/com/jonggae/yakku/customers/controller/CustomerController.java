@@ -19,7 +19,6 @@ public class CustomerController {
     //todo: 회원가입 상황에 대응한 예외 처리 작성하기 , response 응답 형태 정리하기
 
 
-
     @GetMapping("/confirm")
     public ResponseEntity<ApiResponseDto<CustomerResponseDto>> confirmCustomer(@RequestParam("token") String token) {
         CustomerResponseDto customerDto = customerService.confirmCustomer(token);
@@ -28,18 +27,4 @@ public class CustomerController {
 
     }
 //
-//    @GetMapping("/my-page")
-//    public ResponseEntity<ApiResponseDto<CustomerMyPageResponseDto>> myPage() {
-//        CustomerMyPageResponseDto getCustomerDto = customerService.getMyPage();
-//        String message = "회원 정보";
-//        return ApiResponseUtil.success(message, getCustomerDto, 200);
-//    }
-//
-//    @PatchMapping("/my-page/update")
-//    public ResponseEntity<ApiResponseDto<CustomerResponseDto>> updateCustomerInfo(@RequestBody CustomerUpdateDto updateDto, Authentication authentication) {
-//        String customerName = authentication.getName();
-//        CustomerResponseDto updatedCustomer = customerService.updateCustomerInfo(customerName, updateDto);
-//        String message = "회원 정보가 수정되었습니다.";
-//        return ApiResponseUtil.success(message, updatedCustomer, 200);
-//    }
 }
