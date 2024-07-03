@@ -22,14 +22,14 @@ public class WishlistItem {
     @JoinColumn(name = "wishlist_id")
     private Wishlist wishlist;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
+
+    @Column(name = "product_id")
+    private Long productId;
 
     private Long quantity;
 
-    public Long getTotalPrice() {
-        return product.getPrice() * quantity;
+    public Long getTotalPrice(Long productPrice) {
+        return productPrice * quantity;
     }
 
 }

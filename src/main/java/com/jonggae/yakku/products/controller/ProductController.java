@@ -22,7 +22,7 @@ public class ProductController {
 
     /*todo : 상품 등록을 누가 할 것인가 권한 설정 등 필요, Admin?? User??    */
 
-    @PostMapping
+    @PostMapping()
     public ResponseEntity<ApiResponseDto<ProductDto>> addProduct(@RequestBody ProductDto productDto) {
         ProductDto addedProduct = productService.addProduct(productDto);
         String message = MessageUtil.getFormattedMessage(ProductApiMessages.PRODUCT_ADD_SUCCESS, productDto.getProductName());
