@@ -17,19 +17,19 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/products/wishlist")
+@RequestMapping("/api/wishlist")
 public class WishlistApiController {
 
     private final WishlistService wishlistService;
     private static final Logger logger = LoggerFactory.getLogger(WishlistApiController.class);
 
 
-    @GetMapping()
+    @GetMapping("/my-wishlist")
     public ResponseEntity<ApiResponseDto<List<WishlistItemDto>>> getWishlist(@RequestHeader("customerId") Long customerId) {
         logger.debug("getWishlist endpoint called with customerName: {}", customerId);
-
         List<WishlistItemDto> wishlistItems = wishlistService.getWishlist(customerId);
         String message = "위시리스트 조회 완료";
         return ApiResponseUtil.success(message, wishlistItems, 200);
     }
 }
+
