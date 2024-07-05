@@ -36,7 +36,7 @@ spring:
 logging:
   level:
     org.springframework.security: debug
-    org.springframework.kafka: DEBUG
+#    org.springframework.kafka: DEBUG
 #    org.springframework: debug
 
 eureka:

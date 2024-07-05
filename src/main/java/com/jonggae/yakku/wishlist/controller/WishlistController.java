@@ -19,13 +19,7 @@ public class WishlistController {
 //                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 //    }
 //
-//    @PostMapping
-//    public ResponseEntity<WishlistItem> addWishlistItem(@RequestBody WishlistItem item) {
-//        return SecurityUtil.getCurrentUser()
-//                .map(user -> ResponseEntity.status(HttpStatus.CREATED).body(wishlistService.addItemToWishlist(user.getId(), item)))
-//                .orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
-//    }
-
+//
 //
 //    private final WishlistService wishlistService;
 //    private final SecurityUtil securityUtil;
