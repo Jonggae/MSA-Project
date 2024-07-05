@@ -3,6 +3,7 @@ package com.jonggae.yakku.products.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jonggae.yakku.exceptions.NotFoundProductException;
+import com.jonggae.yakku.kafka.EventDto;
 import com.jonggae.yakku.products.dto.CustomPageDto;
 import com.jonggae.yakku.products.dto.ProductDto;
 import com.jonggae.yakku.products.dto.ProductInfoRequest;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -42,22 +44,37 @@ public class ProductService {
         log.info("Received product info request: {}", message);
 
         try {
-            ProductInfoRequest request =objectMapper.readValue(message, ProductInfoRequest.class);
-            log.info("Parsed request: {}", request);
-            Product product = productRepository.findById(request.getProductId())
+            EventDto eventDto = objectMapper.readValue(message, EventDto.class);
+            log.info("Parsed event: {}", eventDto);
+
+            if (!"PRODUCT_INFO_REQUEST".equals(eventDto.getEventType())) {
+                log.warn("Unexpected event type: {}", eventDto.getEventType());
+                return;
+            }
+
+            Product product = productRepository.findById(eventDto.getProductId())
                     .orElseThrow(NotFoundProductException::new);
-            log.info("Parsed request: {}", request);
+            log.info("Found product: {}", product);
 
-            ProductDto productDto = ProductDto.fromWithOrderId(product, request.getOrderId());
-            productDto.setOrderId(request.getOrderId());
+            EventDto responseEvent = EventDto.builder()
+                    .eventType("PRODUCT_INFO_RESPONSE")
+                    .orderId(eventDto.getOrderId())
+                    .productId(eventDto.getProductId())
+                    .customerId(eventDto.getCustomerId())
+                    .data(Map.of(
+                            "id", product.getId(),
+                            "productName", product.getProductName(),
+                            "price", product.getPrice()
+                            // 필요한 다른 제품 정보 추가
+                    ))
+                    .build();
 
-            String response = objectMapper.writeValueAsString(productDto);
+            String response = objectMapper.writeValueAsString(responseEvent);
             log.info("Prepared response: {}", response);
 
             kafkaTemplate.send("product-info-response", String.valueOf(product.getId()), response);
         } catch (JsonProcessingException e) {
             log.error("Error processing product info request", e);
-
         }
     }
 

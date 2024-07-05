@@ -7,7 +7,6 @@ import com.jonggae.yakku.products.repository.ProductRepository;
 import com.jonggae.yakku.wishlist.dto.WishlistItemDto;
 import com.jonggae.yakku.wishlist.entity.WishlistItem;
 import com.jonggae.yakku.wishlist.repository.WishlistItemRepository;
-import com.jonggae.yakku.wishlist.repository.WishlistRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
