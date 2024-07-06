@@ -15,7 +15,6 @@ public class ProductDto {
     private String productDescription;
     private Long price;
     private Long stock;
-    private Long orderId; //kafka 메시지 처리 위해 추가
 
     public static ProductDto from(Product product) {
         return ProductDto.builder()
@@ -24,16 +23,6 @@ public class ProductDto {
                 .productDescription(product.getProductDescription())
                 .price(product.getPrice())
                 .stock(product.getStock())
-                .build();
-    }
-    public static ProductDto fromWithOrderId(Product product, Long orderId) {
-        return ProductDto.builder()
-                .id(product.getId())
-                .productName(product.getProductName())
-                .productDescription(product.getProductDescription())
-                .price(product.getPrice())
-                .stock(product.getStock())
-                .orderId(orderId)
                 .build();
     }
 
