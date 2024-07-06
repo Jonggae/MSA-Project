@@ -1,0 +1,20 @@
+services:
+  mysql:
+    image: mysql:latest
+    container_name: payment_service_container
+    env_file:
+      - .env
+    ports:
+      - "3310:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - eureka-network
+
+
+volumes:
+  mysql_data:
+
+networks:
+  eureka-network:
+    driver: bridge
