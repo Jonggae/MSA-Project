@@ -30,6 +30,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override //로그인 시도
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
+        if (!request.getRequestURI().equals("/api/customers/login")) {
+            throw new AuthenticationServiceException("잘못된 로그인 경로입니다.");
+        }
         try {
             LoginRequestDto loginRequestDto = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
 
@@ -37,8 +40,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                     loginRequestDto.getCustomerName(),
                     loginRequestDto.getPassword());
             return loginProvider.authenticate(authentication);
-
-
         } catch (IOException e) {
             throw new AuthenticationServiceException("로그인 실패", e);
         }

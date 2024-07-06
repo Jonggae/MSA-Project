@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
@@ -33,18 +32,32 @@ public class JwtFilter extends GenericFilterBean {
         String jwt = resolveToken(httpServletRequest);
         String requestURI = httpServletRequest.getRequestURI();
 
-        if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-            Authentication authentication = tokenProvider.getAuthentication(jwt);
-            if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails) {
-                CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
-            } else {
-                logger.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
+        logger.debug("Processing request to: {}", requestURI);
+// todo: 코드가 지저분하니 정리해봅시다
+
+        if (!requestURI.startsWith("/api/customers/register")) {
+            try {
+                if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
+                    Authentication authentication = tokenProvider.getAuthentication(jwt);
+                    if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails) {
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                        logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}", authentication.getName(), requestURI);
+                    } else {
+                        logger.debug("유효한 인증정보를 가져오지 못했습니다, uri: {}", requestURI);
+                    }
+                } else {
+                    logger.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
+                }
+            } catch (Exception e) {
+                logger.error("JWT 처리 중 오류 발생: {}", e.getMessage());
             }
-            filterChain.doFilter(servletRequest, servletResponse);
+        } else {
+            logger.debug("Skipping JWT filter for registration endpoint: {}", requestURI);
         }
+
+        filterChain.doFilter(servletRequest, servletResponse);
     }
+
 
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
