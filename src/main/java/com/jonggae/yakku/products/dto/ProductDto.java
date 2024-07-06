@@ -1,14 +1,12 @@
 package com.jonggae.yakku.products.dto;
 
 import com.jonggae.yakku.products.entity.Product;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
 @Builder
 public class ProductDto {
 
@@ -27,6 +25,7 @@ public class ProductDto {
                 .stock(product.getStock())
                 .build();
     }
+
     public static Product toEntity(ProductDto productDto) {
         return Product.builder()
                 .productName(productDto.getProductName())

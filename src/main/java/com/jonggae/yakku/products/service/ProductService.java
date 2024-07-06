@@ -7,20 +7,24 @@ import com.jonggae.yakku.products.entity.Product;
 import com.jonggae.yakku.products.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductService {
-
     private final ProductRepository productRepository;
+
+    //상품 단일 조회 (상세 조회)
+    public ProductDto getProductInfo(Long productId) {
+        return productRepository.findById(productId)
+                .map(ProductDto::from)
+                .orElseThrow(NotFoundProductException::new);
+    }
 
     //상품 등록 todo : 누가 상품을 올리는 건지 모르겠는데, 권한을 지정해야하는지?
     public ProductDto addProduct(ProductDto productDto) {
@@ -35,13 +39,6 @@ public class ProductService {
         Page<ProductDto> productDtoPage = productPage.map(ProductDto::from);
 
         return CustomPageDto.from(productDtoPage);
-    }
-
-    //상품 단일 조회 (상세 조회)
-    public ProductDto showProductInfo(Long productId) {
-        return productRepository.findById(productId)
-                .map(ProductDto::from)
-                .orElseThrow(NotFoundProductException::new);
     }
 
     // 상품 정보 수정

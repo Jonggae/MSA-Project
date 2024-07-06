@@ -18,14 +18,14 @@ public class WishlistItemDto {
     private Long price;
     private Long totalPrice;
 
-//    public static WishlistItemDto from(WishlistItem wishlistItem) {
-//        return WishlistItemDto.builder()
-//                .wishlistItemId(wishlistItem.getId())
-//                .productId(wishlistItem.getProduct().getId())
-//                .productName(wishlistItem.getProduct().getProductName())
-//                .quantity(wishlistItem.getQuantity())
-//                .price(wishlistItem.getProduct().getPrice())
-//                .totalPrice(wishlistItem.getTotalPrice())
-//                .build();
-//    }
+    public static WishlistItemDto from(WishlistItem wishlistItem) {
+        return WishlistItemDto.builder()
+                .wishlistItemId(wishlistItem.getId())
+                .productId(wishlistItem.getProduct().getId())
+                .productName(wishlistItem.getProduct().getProductName())
+                .quantity(wishlistItem.getQuantity())
+                .price(wishlistItem.getProduct().getPrice())
+                .totalPrice(wishlistItem.getTotalPrice())
+                .build();
+    }
 }

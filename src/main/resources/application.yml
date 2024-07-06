@@ -17,30 +17,26 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
-#  mail:
-#    host: smtp.gmail.com
-#    port: 587
-#    username: muvnelika@gmail.com
-#    password: ${GOOGLE_MAIL_PASSWORD}
-#    properties:
-#      mail:
-#        smtp:
-#          auth: true
-#          timeout: 5000
-#          starttls:
-#            enable: true
-#jwt:
-#  header: Authorization
-#  secret:
-#    key: ${JWT_SECRET_KEY}
-#  refresh:
-#    secret:
-#      key: ${JWT_REFRESH_SECRET_KEY}
-#  expiration_time: 3600
-#  refresh_expiration_time: 604800
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: product-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: '*'
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: '*'
+
+
 logging:
   level:
     org.springframework.security: debug
+#    org.springframework.kafka: DEBUG
 #    org.springframework: debug
 
 eureka:

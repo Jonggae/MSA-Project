@@ -18,18 +18,21 @@ public class WishlistItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(name = "customer_id")
+    private Long customerId;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
+
     @ManyToOne
     @JoinColumn(name = "wishlist_id")
     private Wishlist wishlist;
 
-
-    @Column(name = "product_id")
-    private Long productId;
-
     private Long quantity;
 
-    public Long getTotalPrice(Long productPrice) {
-        return productPrice * quantity;
+    public Long getTotalPrice() {
+        return product.getPrice() * quantity;
     }
 
 }
