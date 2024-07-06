@@ -29,6 +29,10 @@ ext {
 dependencies {
     runtimeOnly 'com.mysql:mysql-connector-j'
 
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+
     // 인증 토큰, JWT 토큰 관리를 위한 Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-security'
