@@ -15,9 +15,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/products")
 public class ProductController {
-    private final ProductService productService;
 
-    /*todo : 상품 등록을 누가 할 것인가 권한 설정 등 필요, Admin?? User??    */
+    private final ProductService productService;
 
     @GetMapping("/{productId}/order-info")
     public ResponseEntity<ProductDto> getProductOrderInfo(@PathVariable Long productId) {

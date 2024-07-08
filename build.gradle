@@ -27,30 +27,34 @@ ext {
 }
 
 dependencies {
+    //MySQL
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    //kafka
     implementation 'org.springframework.kafka:spring-kafka'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
 
-
+    //eureka
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
-    // 인증 토큰, JWT 토큰 관리를 위한 Redis
+    //Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    //general
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-    // JWT 관련
+    // JWT
     compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
-
+    // docker
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 
+    //etc
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-    runtimeOnly 'com.mysql:mysql-connector-j'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 

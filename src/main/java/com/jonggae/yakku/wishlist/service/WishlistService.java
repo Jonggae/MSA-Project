@@ -1,7 +1,7 @@
 package com.jonggae.yakku.wishlist.service;
 
-import com.jonggae.yakku.exceptions.NotFoundProductException;
-import com.jonggae.yakku.exceptions.NotFoundWishlistItemException;
+import com.jonggae.yakku.common.exceptions.NotFoundProductException;
+import com.jonggae.yakku.common.exceptions.NotFoundWishlistItemException;
 import com.jonggae.yakku.products.entity.Product;
 import com.jonggae.yakku.products.repository.ProductRepository;
 import com.jonggae.yakku.wishlist.dto.WishlistItemDto;

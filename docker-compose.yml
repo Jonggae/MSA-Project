@@ -13,8 +13,19 @@ services:
     networks:
       - eureka-network
 
+  redis:
+    image: "redis:latest"
+    container_name: "product_stock_redis"
+    ports:
+      - "6381:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - eureka-network
+
 volumes:
   mysql_data:
+  redis_data:
 
 networks:
   eureka-network:
