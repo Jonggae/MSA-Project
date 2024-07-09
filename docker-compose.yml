@@ -11,7 +11,8 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
-      - eureka-network
+      - MSA-network
+
 
   redis:
     image: "redis:latest"
@@ -21,12 +22,12 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      - eureka-network
+      - MSA-network
 
 volumes:
   mysql_data:
   redis_data:
 
 networks:
-  eureka-network:
-    driver: bridge
+  MSA-network:
+    external: true

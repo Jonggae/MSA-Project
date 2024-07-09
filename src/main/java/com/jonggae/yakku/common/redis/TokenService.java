@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 @AllArgsConstructor
 public class TokenService {
-    private static final Duration EMAIL_TOKEN_TTL = Duration.ofMinutes(10);
+    private static final Duration EMAIL_TOKEN_TTL = Duration.ofMinutes(60);
     private static final Duration REFRESH_TOKEN_TTL = Duration.ofHours(1);
 
     private final RedisTemplate<String, String> redisTemplate;
