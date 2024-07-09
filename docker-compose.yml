@@ -11,12 +11,12 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
-      - eureka-network
+      - MSA-network
 
 volumes:
   mysql_data:
 
 networks:
-  eureka-network:
-    driver: bridge
+  MSA-network:
+    external: true
 

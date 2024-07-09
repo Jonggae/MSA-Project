@@ -5,7 +5,7 @@ spring:
   application:
     name: payment-service
   datasource:
-    url: jdbc:mysql://localhost:3310/payment_database
+    url: jdbc:mysql://127.0.0.1:3310/payment_database
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -38,9 +38,10 @@ eureka:
 
 logging:
     level:
+
       org.hibernate.SQL: DEBUG
-      org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-      com.zaxxer.hikari: DEBUG
+#      org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+#      com.zaxxer.hikari: DEBUG
 
 #      org.springframework: debug
 

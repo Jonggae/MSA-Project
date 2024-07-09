@@ -20,6 +20,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((authorizeRequest) -> authorizeRequest
+                .requestMatchers("/api/payments/process").permitAll()
                 .anyRequest().authenticated());
 
         http.csrf(AbstractHttpConfigurer::disable);
