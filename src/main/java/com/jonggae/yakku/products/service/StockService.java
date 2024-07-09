@@ -1,5 +1,8 @@
 package com.jonggae.yakku.products.service;
 
+import com.jonggae.yakku.products.entity.Product;
+import com.jonggae.yakku.products.repository.ProductRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;
@@ -7,6 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -14,6 +18,25 @@ import java.util.Optional;
 public class StockService {
 
     private final RedisTemplate<String, Long> redisTemplate;
+    private final ProductRepository productRepository;
+
+    public void initializeStock(Long productId, Long quantity){
+        String key = "stock:" + productId;
+        redisTemplate.opsForValue().set(key, quantity);
+    }
+
+    public void updateStock(Long productId, Long quantity){
+        String key = "stock:" + productId;
+        redisTemplate.opsForValue().set(key, quantity);
+    }
+
+    @PostConstruct
+    public void loadInitialStock() {
+        List<Product> products = productRepository.findAll();
+        for(Product product : products){
+            initializeStock(product.getId(), product.getStock());
+        }
+    }
 
     public Long getStock(Long productId){
         String key = "stock:" + productId;

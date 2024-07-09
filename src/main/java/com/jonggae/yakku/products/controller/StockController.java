@@ -1,6 +1,7 @@
 package com.jonggae.yakku.products.controller;
 
 import com.jonggae.yakku.products.dto.StockReservationRequestDto;
+import com.jonggae.yakku.products.dto.UpdateStockRequestDto;
 import com.jonggae.yakku.products.service.StockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,18 @@ import org.springframework.web.bind.annotation.*;
 public class StockController {
 
     private final StockService stockService;
+
+    @PostMapping("/{productId}/update-stock")
+    public ResponseEntity<Void> updateStock(@PathVariable Long productId, @RequestBody UpdateStockRequestDto request) {
+        stockService.updateStock(productId, request.getQuantity());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/initialize-stock")
+    public ResponseEntity<Void> initializeAllStock() {
+        stockService.loadInitialStock();
+        return ResponseEntity.ok().build();
+    }
     //재고 확인
     @GetMapping("/{productId}/stock")
     public ResponseEntity<Long> checkStock(@PathVariable Long productId) {
