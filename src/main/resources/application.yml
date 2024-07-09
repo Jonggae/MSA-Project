@@ -5,12 +5,12 @@ spring:
   application:
     name: payment-service
   datasource:
-    url: jdbc:mysql://payment_service_container:3306/payment_database
+    url: jdbc:mysql://localhost:3310/payment_database
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
-    database-platform: org.hibernate.dialect.MySQL8Dialect
+    database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
     show-sql: true
@@ -26,20 +26,6 @@ jwt:
     secret:
       key: ${JWT_REFRESH_SECRET_KEY}
 
-#  kafka:
-#    bootstrap-servers: localhost:9092
-#    consumer:
-#      group-id: product-service
-#      auto-offset-reset: earliest
-#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-#      properties:
-#        spring.json.trusted.packages: '*'
-#    producer:
-#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-#      value-serializer: org.springframework.kafka.support.serializer.JsonDeserializer
-#      properties:
-#        spring.json.trusted.packages: '*'
 
 eureka:
   client:
@@ -49,6 +35,14 @@ eureka:
     register-with-eureka: true
   instance:
     prefer-ip-address: true
+
+logging:
+    level:
+      org.hibernate.SQL: DEBUG
+      org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+      com.zaxxer.hikari: DEBUG
+
+#      org.springframework: debug
 
 management:
   endpoints:
