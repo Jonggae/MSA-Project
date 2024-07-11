@@ -3,7 +3,9 @@ package com.jonggae.yakku.products.service;
 import com.jonggae.yakku.products.entity.Product;
 import com.jonggae.yakku.products.repository.ProductRepository;
 import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StockService {
@@ -43,6 +46,7 @@ public class StockService {
         return Optional.ofNullable(redisTemplate.opsForValue().get(key)).orElse(0L);
     }
 
+    @Transactional
     public boolean reserveStock(Long productId, Long quantity) {
         String key = "stock:" + productId;
         return Boolean.TRUE.equals(redisTemplate.execute(new SessionCallback<Boolean>() {
@@ -61,6 +65,7 @@ public class StockService {
     }
 
     public void confirmReservation(Long productId,  Long quantity){
+        log.info("Confirmed reservation for product: {}, quantity: {}", productId, quantity);
 
     }
     public void cancelReservation(Long productId, Long quantity){
