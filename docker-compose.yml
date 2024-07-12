@@ -11,10 +11,22 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
-      - eureka-network
+      - MSA-network
+
+  redis:
+    image: "redis:latest"
+    container_name: "product_stock_redis"
+    ports:
+      - "6381:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - MSA-network
 
 volumes:
   mysql_data:
+  redis_data:
 
 networks:
-  eureka-network:
+  MSA-network:
+    external: true

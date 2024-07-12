@@ -1,6 +1,6 @@
 package com.jonggae.yakku.products.service;
 
-import com.jonggae.yakku.exceptions.NotFoundProductException;
+import com.jonggae.yakku.common.exceptions.NotFoundProductException;
 import com.jonggae.yakku.products.dto.CustomPageDto;
 import com.jonggae.yakku.products.dto.ProductDto;
 import com.jonggae.yakku.products.entity.Product;

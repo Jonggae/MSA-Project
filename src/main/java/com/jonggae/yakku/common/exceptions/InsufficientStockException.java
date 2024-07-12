@@ -1,4 +1,4 @@
-package com.jonggae.yakku.exceptions;
+package com.jonggae.yakku.common.exceptions;
 
 public class InsufficientStockException extends RuntimeException{
     public InsufficientStockException(String productName) {
