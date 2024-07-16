@@ -12,4 +12,5 @@ services:
 
 networks:
   eureka-network:
+    name: eureka-network
     driver: bridge
