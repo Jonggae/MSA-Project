@@ -10,11 +10,11 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      - eureka-network
+      - MSA-network
 
 volumes:
   redis_data:
 
 networks:
-  eureka-network:
-    driver: bridge
+ MSA-network:
+    external: true

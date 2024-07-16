@@ -18,7 +18,6 @@ public class SecurityConfig {
         http.csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
-
                 .authorizeExchange(exchanges -> exchanges
                         .anyExchange().permitAll()
                 )

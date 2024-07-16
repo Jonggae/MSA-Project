@@ -13,6 +13,11 @@ spring:
           enabled: true
           lower-case-service-id: true
       routes:
+        - id: test-order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/test/time-orders/**
+
         - id: customer-service
           uri: lb://customer-service
           predicates:
@@ -27,8 +32,6 @@ spring:
           uri: lb://product-service
           predicates:
             - Path=/api/products/**, /api/wishlist/**
-
-
       default-filters:
         - name: ApiGatewayFilter
       globalcors:
@@ -55,11 +58,11 @@ jwt:
   expiration_time: 6000
   refresh_expiration_time: 604800
 
-logging:
-  level:
-    org.springframework.cloud.gateway: trace
-    org.springframework: debug
-    reactor.netty.http.client: debug
+#logging:
+#  level:
+#    org.springframework.cloud.gateway: trace
+#    org.springframework: debug
+#    reactor.netty.http.client: debug
 
 
 
