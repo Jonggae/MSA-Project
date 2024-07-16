@@ -62,10 +62,10 @@ jwt:
 logging:
     level:
       org.springframework.security: DEBUG
-      com.jonggae.yakku.security.jwt.JwtFilter: DEBUG
-      com.jonggae.yakku: debug
-      org.springframework.web: debug
-      org.springframework.boot.autoconfigure.security: debug
+#      com.jonggae.yakku.security.jwt.JwtFilter: DEBUG
+#      com.jonggae.yakku: debug
+#      org.springframework.web: debug
+#      org.springframework.boot.autoconfigure.security: debug
 
 eureka:
   client:
