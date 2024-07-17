@@ -35,12 +35,13 @@ public class ApiGatewayFilter extends AbstractGatewayFilterFactory<ApiGatewayFil
             logger.info("Request path: {}", path);
 
             // 로그인 경로는 JWT 검증을 하지 않음
-            if (path.equals("/api/customers/login")) {
+            if (path.equals("/api/customers/login") || path.equals("/api/customers/register")
+                    || path.startsWith("/api/products/") || path.startsWith("/api/test")) {
                 return chain.filter(exchange);
             }
             String token = extractToken(exchange.getRequest().getHeaders());
             if (token == null) {
-                logger.warn("Missing JWT token");
+                logger.warn("토큰이 존재하지 않습니다.");
                 return chain.filter(exchange);
             }
             try {

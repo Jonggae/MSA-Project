@@ -18,10 +18,7 @@ public class SecurityConfig {
         http.csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
-
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/api/customers/login").permitAll()
-                        .pathMatchers("/api/products/**").permitAll()
                         .anyExchange().permitAll()
                 )
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance());
