@@ -1,0 +1,70 @@
+server:
+  port: 8083
+spring:
+  application:
+    name: order-service
+  datasource:
+    url: jdbc:mysql://order_service_container:3306/order_database
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: false
+
+  data:
+    redis:
+      host: order_service_redis
+      port: 6382
+
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: order-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: '*'
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.trusted.packages: '*'
+
+jwt:
+  header: Authorization
+  secret:
+    key: ${JWT_SECRET_KEY}
+  refresh:
+    secret:
+      key: ${JWT_REFRESH_SECRET_KEY}
+  expiration_time: 3600
+  refresh_expiration_time: 604800
+
+logging:
+    level:
+      org.springframework.security: debug
+      org.jonggae.yakku.security: debug
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
