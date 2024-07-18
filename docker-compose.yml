@@ -12,8 +12,7 @@ services:
 
   # Eureka Server
   eureka-server:
-    build:
-      context: ./eureka-server
+    image: eureka-eureka-server:latest
     container_name: eureka-server
     ports:
       - "8761:8761"
@@ -25,7 +24,7 @@ services:
     image: mysql:latest
     container_name: customer_service_container
     env_file:
-      - .env
+      - ./customer-service/.env
     ports:
       - "3307:3306"
     volumes:
@@ -48,7 +47,7 @@ services:
     image: mysql:latest
     container_name: product_service_container
     env_file:
-      - .env
+      - ./product-service/.env
     ports:
       - "3308:3306"
     volumes:
@@ -71,7 +70,7 @@ services:
     image: mysql:latest
     container_name: order_service_container
     env_file:
-      - .env
+      - ./order-service/.env
     ports:
       - "3309:3306"
     volumes:
@@ -94,7 +93,7 @@ services:
     image: mysql:latest
     container_name: payment_service_container
     env_file:
-      - .env
+      - ./payment-service/.env
     ports:
       - "3310:3306"
     volumes:
