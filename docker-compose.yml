@@ -6,7 +6,7 @@ services:
       context: .
     container_name: eureka-server
     ports:
-      - "8761:8761"
+      - "8762:8761"
     networks:
       - eureka-network
 
