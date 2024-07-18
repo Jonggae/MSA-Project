@@ -1,0 +1,52 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: payment-service
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3310/payment_database
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: false
+jwt:
+  header: Authorization
+  secret:
+    key: ${JWT_SECRET_KEY}
+  refresh:
+    secret:
+      key: ${JWT_REFRESH_SECRET_KEY}
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+
+logging:
+    level:
+
+      org.hibernate.SQL: DEBUG
+#      org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+#      com.zaxxer.hikari: DEBUG
+
+#      org.springframework: debug
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
