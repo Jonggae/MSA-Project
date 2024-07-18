@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: product_service_container
+    env_file:
+      - .env
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - MSA-network
+
+  redis:
+    image: "redis:latest"
+    container_name: "product_stock_redis"
+    ports:
+      - "6381:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - MSA-network
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  MSA-network:
+    external: true
