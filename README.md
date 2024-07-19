@@ -26,7 +26,7 @@
 
 
 ## 아키텍처 개요
-![아키텍처 다이어그램](images/architecture-diagram.png)
+![아키텍처 다이어그램](images/Architecture.jpg)
 
 Yakku 프로젝트는 다음과 같은 주요 서비스로 구성되어 있습니다:
 - API Gateway
@@ -36,25 +36,38 @@ Yakku 프로젝트는 다음과 같은 주요 서비스로 구성되어 있습�
 - Order Service
 - Payment Service
 
-각 서비스의 상세 설명은 [SERVICES.md](SERVICES.md)를 참조하세요.
-
 ## 주요 기능
-- E-commerce 주요 기능인 상품, 주문, 위시리스트 기능
+- E-commerce 주요 기능인 상품, 주문, 결제, 위시리스트 기능
 - JWT를 사용한 사용자 식별, 로그인 기능
-- 대량의 주문 요청
-- [주요 기능 4]
+- 대량의 주문 요청시 캐싱과 Redisson 분산 락을 통하여 명확한 재고 처리
 
 ## 시작하기
-프로젝트 설정 및 실행 방법에 대한 자세한 내용은 [DEVELOPMENT.md](DEVELOPMENT.md)를 참조하세요.
+- 현재 구조 개편중으로 실행이 불가합니다. 업데이트 예정
+- 임시 실행 방법
+  <details>
+  <summary>열기</summary>
+
+  [![Eureka Server](https://img.shields.io/badge/Eureka%20Server-blue?style=for-the-badge&logo=github)](https://github.com/Jonggae/yakku-eureka)
+  [![API Gateway](https://img.shields.io/badge/API%20Gateway-blue?style=for-the-badge&logo=github)](https://github.com/Jonggae/yakku-APIGateway)
+  [![User Service](https://img.shields.io/badge/User%20Service-blue?style=for-the-badge&logo=github)](https://github.com/Jonggae/yakku-user-service)
+  
+  [![Product Service](https://img.shields.io/badge/Product%20Service-blue?style=for-the-badge&logo=github)](https://github.com/Jonggae/yakku-product-service)
+  [![Order Service](https://img.shields.io/badge/Order%20Service-blue?style=for-the-badge&logo=github)](https://github.com/Jonggae/yakku-order-service)
+  [![Payment Service](https://img.shields.io/badge/Payment%20Service-blue?style=for-the-badge&logo=github)](https://github.com/Jonggae/yakku-payment-service)
+  
+  - 분리된 각 Repository에 접근합니다.
+  - terminal에서 각 docker-compose를 실행합니다. 
+      
+    ```docker-compose up -d```
+  - 서비스 실행 순서: Eureka Server > API Gateway > 기타 서비스
+  - 모든 서비스가 실행된 후, http://localhost:{API_GATEWAY_PORT}/actuator/health 에 접속하여 시스템 상태를 확인할 수 있습니다.
+  </details>
+## 트러블 슈팅
 
 ## 연락처
-- 개발자: 최종우 (Choi Jong Woo)
+- 개발자: 최종우 (Choi JongWoo)
 - 이메일: muvnelik@naver.com
-- GitHub: https://github.com/Jonggae
-- Blog: https://jonggae.tistory.com
 
-## 추가 문서
-- [아키텍처 상세](ARCHITECTURE.md)
-- [서비스 설명](SERVICES.md)
-- [개발 가이드](DEVELOPMENT.md)
-- [배포 프로세스](DEPLOYMENT.md)
+  [![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github)](https://github.com/Jonggae)
+  [![Blog](https://img.shields.io/badge/Blog-Tistory-FF5722?style=for-the-badge&logo=blogger)](https://jonggae.tistory.com/)
+
