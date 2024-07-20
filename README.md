@@ -45,9 +45,8 @@
 ***
 ## 🛫 시작하기
 - 현재 구조 개편중으로 실행이 불가합니다. 업데이트 예정
-- 임시 실행 방법
   <details>
-  <summary>열기</summary>
+  <summary> 임시 실행 방법</summary>
 
   [![Eureka Server](https://img.shields.io/badge/Eureka%20Server-blue?style=for-the-badge&logo=github)](https://github.com/Jonggae/yakku-eureka)
   [![API Gateway](https://img.shields.io/badge/API%20Gateway-blue?style=for-the-badge&logo=github)](https://github.com/Jonggae/yakku-APIGateway)
@@ -68,11 +67,29 @@
 ## 📶성능 최적화 및 트러블 슈팅
 ### 트러블 슈팅
 
-#### 문제
-회원 가입 이메일 인증이 완료되었으나 입력한 회원 정보가 제대로 저장되지 않음. -> DTO를 상황에 맞게 사용하여 해결
-[자세히 보기](https://jonggae.tistory.com/169)
+#### 1. DTO를 통한 Data 전송 문제
+회원 가입 이메일 인증이 완료되었으나 입력한 회원 정보가 제대로 저장되지 않음.
 
+-> DTO를 세분화하여 해결 [자세히 보기](https://jonggae.tistory.com/169)
 
+#### 2. 액세스 토큰의 재발급 문제
+올바른 리프레시 토큰이 있는데도 액세스 토큰이 재발급 되지 않음
+
+-> JWT 비밀 키를 하나로 사용하고 있어 발급은 되나 이후 과정에 문제가 발생함.
+비밀키를 Refresh, Access token을 분리하여 다시 설정
+
+#### 3. API Gateway
+
+#### 4. Kafka vs Feign Client
+
+### 성능 최적화
+
+1만건의 동시 구매 요청 처리
+- Redis로 재고 관리
+- 분산 락
+- Redisson
+- 캐싱
+- 락 최적화 등
 
 ***
 ## 📱연락처
